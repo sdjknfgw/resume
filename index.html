@@ -1,1 +1,1175 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>陈成睿 · 个人简历</title><meta name="description" content="个人简历页面"><link rel="stylesheet" href="styles.css"></head><body><canvas id="particle-canvas"></canvas><div id="shape-container"></div><div class="container"><h1>陈成睿</h1><h2>前端开发工程师</h2><div class="contact-info"><p>📧 chengru@example.com</p><p>📱 138****0000</p><p>📍 北京市朝阳区</p></div><div class="section"><h3>专业技能</h3><ul><li>HTML5 / CSS3 / JavaScript</li><li>React / Vue</li><li>Node.js</li><li>Git / Docker</li></ul></div><div class="section"><h3>工作经历</h3><div class="job"><h4>前端开发工程师</h4><p>某科技公司 | 2020 - 至今</p><ul><li>负责公司核心产品的前端开发</li><li>优化页面性能，提升用户体验</li></ul></div></div><div class="section"><h3>项目经验</h3><div class="project"><h4>企业官网重构</h4><p>使用 React + TypeScript 重构企业官网，提升加载速度</p></div></div><div class="section"><h3>教育背景</h3><p>某某大学 | 计算机科学与技术 | 本科</p></div><div class="footer"><p>© 2026 陈成睿</p></div></div><script src="script.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>陈成睿 · 个人简历</title>
+
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Lucide Icons CDN -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', '"Noto Sans SC"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
+        },
+        colors: {
+          primary: {
+            DEFAULT: '#4f46e5',
+            light: '#6366f1',
+            dark: '#4338ca',
+          },
+          accent: {
+            DEFAULT: '#06b6d4',
+            light: '#22d3ee',
+          },
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  /* ===== 基础与背景 ===== */
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html { scroll-behavior:smooth; font-size:16px; }
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #030712;
+    color: #f1f5f9;
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.2s ease;
+  }
+
+  /* ===== 主题强调色变量（动态背景色切换驱动） ===== */
+  :root {
+    --accent-particle: #22d3ee;              /* 默认 heart · 青：粒子+连线色 */
+    --accent-glow-1: rgba(6,182,212,0.12);   /* .glow-bg::before 光斑（左上） */
+    --accent-glow-2: rgba(79,70,229,0.15);   /* .glow-bg::after 光斑（右下） */
+  }
+
+  /* ===== 背景发光光斑 ===== */
+  .glow-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .glow-bg::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    left: -200px;
+    width: 650px;
+    height: 650px;
+    background: radial-gradient(circle, var(--accent-glow-1) 0%, transparent 70%);
+    filter: blur(140px);
+    border-radius: 50%;
+    transition: background 1.2s ease;
+  }
+  .glow-bg::after {
+    content: '';
+    position: absolute;
+    bottom: -200px;
+    right: -200px;
+    width: 650px;
+    height: 650px;
+    background: radial-gradient(circle, var(--accent-glow-2) 0%, transparent 70%);
+    filter: blur(140px);
+    border-radius: 50%;
+    transition: background 1.2s ease;
+  }
+
+  /* ===== 形状切换按钮组（nav 内集成） ===== */
+  #shapeSwitcher {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  #shapeSwitcher .shape-btn {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #94a3b8;
+    cursor: pointer;
+    transition: color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease, transform 0.25s ease;
+  }
+  #shapeSwitcher .shape-btn:hover {
+    color: #22d3ee;
+    border-color: rgba(34, 211, 238, 0.4);
+    box-shadow: 0 0 18px rgba(34, 211, 238, 0.25);
+  }
+  /* 奇偶错位（水平排列下用 translateY 微错位营造层次） */
+  #shapeSwitcher .shape-btn:nth-child(odd) { transform: translateY(-3px); }
+  #shapeSwitcher .shape-btn:nth-child(even) { transform: translateY(3px); }
+  #shapeSwitcher .shape-btn:nth-child(odd):hover,
+  #shapeSwitcher .shape-btn:nth-child(even):hover { transform: translateY(0); }
+  #shapeSwitcher .shape-btn--active {
+    background: rgba(34, 211, 238, 0.18);
+    border-color: rgba(34, 211, 238, 0.55);
+    color: #67e8f9;
+    box-shadow: 0 0 22px rgba(34, 211, 238, 0.35);
+  }
+  #shapeSwitcher .shape-btn--active:nth-child(odd),
+  #shapeSwitcher .shape-btn--active:nth-child(even) { transform: translateY(0); }
+
+  /* ===== 毛玻璃卡片 ===== */
+  .glass-card {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    transition: all 0.2s ease;
+  }
+  .glass-card:hover {
+    border-color: rgba(34, 211, 238, 0.3);
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.08), 0 8px 32px rgba(0,0,0,0.3);
+  }
+
+  /* ===== 胶囊徽章 ===== */
+  .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: rgba(6, 182, 212, 0.08);
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    color: #67e8f9;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .badge-pill:hover {
+    background: rgba(6, 182, 212, 0.15);
+    border-color: rgba(6, 182, 212, 0.4);
+    box-shadow: 0 0 12px rgba(6, 182, 212, 0.2);
+  }
+
+  /* ===== 按钮辉光 ===== */
+  .btn-glow {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  .btn-glow:hover {
+    box-shadow: 0 0 30px rgba(79, 70, 229, 0.5), 0 0 60px rgba(6, 182, 212, 0.2);
+    transform: translateY(-2px);
+  }
+  .btn-glow:active {
+    transform: translateY(0);
+    box-shadow: 0 0 15px rgba(79, 70, 229, 0.3);
+  }
+  .btn-glow-outline:hover {
+    border-color: rgba(6, 182, 212, 0.5);
+    color: #22d3ee;
+    background: rgba(6, 182, 212, 0.06);
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+  }
+
+  /* ===== 导航栏 ===== */
+  .navbar-blur {
+    background: rgba(3, 7, 18, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-link {
+    position: relative;
+    transition: all 0.2s ease;
+  }
+  .nav-link:hover {
+    color: #22d3ee;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: #06b6d4;
+    border-radius: 2px;
+    transition: width 0.25s ease;
+  }
+  .nav-link:hover::after {
+    width: 70%;
+  }
+
+  /* ===== 亮点卡片微发光 ===== */
+  .metric-card {
+    transition: all 0.3s ease;
+  }
+  .metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.15), 0 12px 40px rgba(0,0,0,0.4);
+    border-color: rgba(6, 182, 212, 0.3);
+  }
+  .metric-number {
+    background: linear-gradient(135deg, #ffffff 0%, #67e8f9 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+  }
+
+  /* ===== Tab按钮 ===== */
+  .tab-btn-custom {
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+  .tab-btn-custom:hover {
+    color: #22d3ee;
+    background: rgba(6, 182, 212, 0.06);
+  }
+  .tab-btn-custom[aria-selected="true"] {
+    background: rgba(79, 70, 229, 0.3);
+    color: #fff;
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 0 12px rgba(79, 70, 229, 0.3);
+  }
+
+  /* ===== Toast ===== */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    z-index: 5000;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 0.85rem;
+    color: #e2e8f0;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+
+  /* ===== 打印样式 ===== */
+  @media print {
+    .navbar-blur, .glow-bg, .toast, .btn-glow, .back-to-top, .btn, .tabs-custom, .lightbox, #bgCanvas, #shapeSwitcher {
+      display: none !important;
+    }
+    body {
+      background: #fff !important;
+      color: #000 !important;
+      padding-top: 0;
+    }
+    .glass-card {
+      background: #fff !important;
+      border: 1px solid #ddd !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    .metric-number {
+      -webkit-text-fill-color: #000 !important;
+      background: none !important;
+    }
+    .tab-panel-custom {
+      display: block !important;
+      opacity: 1 !important;
+    }
+    .tab-panel-custom:not(.active) {
+      display: none !important;
+    }
+    .cert-img { max-width: 200px; }
+  }
+
+  /* ===== 响应式辅助 ===== */
+  @media (max-width: 640px) {
+    .hero-avatar-sm {
+      width: 100px;
+      height: 100px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 背景光斑 ===== -->
+<div class="glow-bg"></div>
+
+<!-- ===== 动态 Canvas 粒子背景（形状聚合，z-1 浮于光斑之上、内容之下） ===== -->
+<canvas id="bgCanvas" class="fixed inset-0 pointer-events-none" style="z-index:1;"></canvas>
+
+<!-- ===== 导航栏 ===== -->
+<nav class="navbar-blur fixed top-0 left-0 right-0 z-50" aria-label="主导航">
+  <div class="max-w-5xl mx-auto px-4 h-14 md:h-16 flex items-center justify-between gap-2">
+    <a href="#hero" class="text-lg md:text-xl font-extrabold text-white hover:text-cyan-400 transition-colors whitespace-nowrap">陈成睿</a>
+    <div class="flex gap-1 md:gap-2 overflow-x-auto scrollbar-none flex-1 justify-start px-2">
+      <a href="#highlights" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">亮点</a>
+      <a href="#experiences" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">经历</a>
+      <a href="#projects" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">生活瞬间</a>
+      <a href="#skills" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">技能</a>
+      <a href="#education" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">教育</a>
+      <a href="#contact" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">联系方式</a>
+    </div>
+    <div class="flex gap-2 flex-shrink-0 items-center">
+      <nav id="shapeSwitcher" aria-label="背景主题切换" class="hidden md:flex">
+        <button data-shape="heart" class="shape-btn shape-btn--active" aria-label="热情 · 心形"><i data-lucide="heart" class="w-4 h-4"></i></button>
+        <button data-shape="star" class="shape-btn" aria-label="亮点 · 星形"><i data-lucide="sparkles" class="w-4 h-4"></i></button>
+        <button data-shape="cap" class="shape-btn" aria-label="教育 · 毕业帽"><i data-lucide="graduation-cap" class="w-4 h-4"></i></button>
+        <button data-shape="chen" class="shape-btn" aria-label="个人 · 陈"><i data-lucide="user" class="w-4 h-4"></i></button>
+      </nav>
+      <button id="printBtn" class="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full border border-white/10 text-slate-400 hover:text-cyan-400 hover:border-cyan-400/30 transition-all" aria-label="打印简历">🖨️</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== 主内容 ===== -->
+<main class="relative z-10 pt-14 md:pt-16">
+
+  <!-- Hero 区 -->
+  <section id="hero" class="py-10 md:py-16">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row items-center md:items-center gap-6 md:gap-10 text-center md:text-left">
+        <div class="w-28 h-28 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-indigo-400/40 shadow-2xl flex-shrink-0">
+          <img src="logo.jpg" alt="陈成睿的大头照" class="w-full h-full object-cover" onerror="this.style.display='none';this.parentElement.textContent='陈';">
+        </div>
+        <div class="flex-1">
+          <h1 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight">陈成睿</h1>
+          <p class="text-sm md:text-base text-cyan-400 font-medium mt-1">化学工程与工艺 · 常州工学院 · 俄语考生</p>
+          <p id="heroSummary" class="text-sm md:text-base text-slate-300 max-w-xl mt-3 leading-relaxed"></p>
+          <div id="heroBadges" class="flex flex-wrap gap-2 mt-4 justify-center md:justify-start"></div>
+          <div class="flex gap-3 mt-5 flex-wrap justify-center md:justify-start">
+            <a href="#experiences" class="btn-glow btn-glow-outline inline-flex items-center gap-2 px-5 py-2.5 md:px-6 md:py-3 rounded-xl border border-white/15 text-slate-300 font-semibold text-sm transition-all">
+              查看经历 <i data-lucide="arrow-down" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 亮点成果 -->
+  <section id="highlights" class="py-10 md:py-14">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="flex items-center gap-3 mb-5">
+        <i data-lucide="trending-up" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400"></i>
+        <h2 class="text-xl md:text-2xl font-extrabold text-white">亮点成果</h2>
+      </div>
+      <p class="text-sm text-slate-400 mb-6">关键成就与量化指标</p>
+      <div id="highlightGrid" class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5"></div>
+    </div>
+  </section>
+
+  <!-- 经历 -->
+  <section id="experiences" class="py-10 md:py-14">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="flex items-center gap-3 mb-5">
+        <i data-lucide="briefcase" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400"></i>
+        <h2 class="text-xl md:text-2xl font-extrabold text-white">经历</h2>
+      </div>
+      <p class="text-sm text-slate-400 mb-4">校园 · 实习 · 其他</p>
+      <div id="expTabs" class="tabs-custom flex gap-1 bg-slate-900/50 border border-white/10 rounded-xl p-1 mb-5 overflow-x-auto scrollbar-none" role="tablist" aria-label="经历分类"></div>
+      <div id="expPanels"></div>
+    </div>
+  </section>
+
+  <!-- 生活瞬间 -->
+  <section id="projects" class="py-10 md:py-14">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="flex items-center gap-3 mb-5">
+        <i data-lucide="camera" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400"></i>
+        <h2 class="text-xl md:text-2xl font-extrabold text-white">生活瞬间</h2>
+      </div>
+      <p class="text-sm text-slate-400 mb-4">记录生活中的美好瞬间</p>
+      <div id="projTabs" class="tabs-custom flex gap-1 bg-slate-900/50 border border-white/10 rounded-xl p-1 mb-5 overflow-x-auto scrollbar-none" role="tablist" aria-label="生活瞬间分类"></div>
+      <div id="projPanels"></div>
+    </div>
+  </section>
+
+  <!-- 技能矩阵 -->
+  <section id="skills" class="py-10 md:py-14">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="flex items-center gap-3 mb-5">
+        <i data-lucide="wrench" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400"></i>
+        <h2 class="text-xl md:text-2xl font-extrabold text-white">技能矩阵</h2>
+      </div>
+      <p class="text-sm text-slate-400 mb-6">语言 · 工具 · 领域</p>
+      <div id="skillsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5"></div>
+    </div>
+  </section>
+
+  <!-- 教育与证书 -->
+  <section id="education" class="py-10 md:py-14">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="flex items-center gap-3 mb-5">
+        <i data-lucide="graduation-cap" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400"></i>
+        <h2 class="text-xl md:text-2xl font-extrabold text-white">教育与证书</h2>
+      </div>
+      <p class="text-sm text-slate-400 mb-6">学术背景与专业资质</p>
+      <div id="eduCard" class="glass-card p-5 md:p-6 mb-5"></div>
+      <div id="certList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+  </section>
+
+  <!-- 联系方式 -->
+  <section id="contact" class="py-10 md:py-14">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="flex items-center gap-3 mb-5">
+        <i data-lucide="contact" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400"></i>
+        <h2 class="text-xl md:text-2xl font-extrabold text-white">联系方式</h2>
+      </div>
+      <p class="text-sm text-slate-400 mb-6">期待与您沟通</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+        <!-- 邮箱卡片 -->
+        <div class="glass-card p-6 flex flex-col items-center text-center">
+          <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-indigo-600/20 flex items-center justify-center mb-3">
+            <i data-lucide="mail" class="w-6 h-6 md:w-8 md:h-8 text-cyan-400"></i>
+          </div>
+          <h3 class="text-base md:text-lg font-bold text-white mb-1">邮箱</h3>
+          <p class="text-sm text-slate-400 mb-4 break-all">26250102@czu.cn</p>
+          <button id="copyEmailBtn" class="btn-glow inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-all">
+            复制邮箱
+          </button>
+        </div>
+        <!-- QQ 卡片 -->
+        <div class="glass-card p-6 flex flex-col items-center text-center">
+          <div class="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden shadow-lg mb-3">
+            <img src="qq.jpg" alt="QQ" class="w-full h-full object-cover">
+          </div>
+          <h3 class="text-base md:text-lg font-bold text-white mb-1">QQ</h3>
+          <p class="text-sm text-slate-400 mb-4">2314514243</p>
+          <button id="copyQQBtn" class="btn-glow inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-all">
+            复制 QQ
+          </button>
+        </div>
+        <!-- 微信卡片 -->
+        <div class="glass-card p-6 flex flex-col items-center text-center">
+          <div class="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden shadow-lg mb-3">
+            <img src="wx.jpg" alt="微信" class="w-full h-full object-cover">
+          </div>
+          <h3 class="text-base md:text-lg font-bold text-white mb-1">微信</h3>
+          <p class="text-sm text-slate-400 mb-4">chen_20071118</p>
+          <button id="copyWeChatBtn" class="btn-glow inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-all">
+            复制微信
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 页脚 -->
+<footer class="relative z-10 py-6 text-center text-slate-500 text-xs border-t border-white/5">
+  <p>© 2026 陈成睿 · 最后更新 2026-08-26 · 常州工学院</p>
+</footer>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox fixed inset-0 bg-black/85 z-[100] hidden items-center justify-center flex-col p-5 opacity-0 transition-opacity duration-300" aria-modal="true" role="dialog">
+  <button id="lightboxClose" class="absolute top-4 right-6 text-4xl text-white hover:text-cyan-400 transition-colors" aria-label="关闭">&times;</button>
+  <img src="" alt="作品集大图" id="lightboxImg" class="max-w-[90%] max-h-[80vh] rounded-lg shadow-2xl">
+  <div id="lightboxCaption" class="text-white mt-4 text-sm opacity-80"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- 返回顶部 -->
+<button class="back-to-top fixed bottom-5 right-5 w-11 h-11 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl opacity-0 pointer-events-none transition-all z-50 flex items-center justify-center" id="backToTop" aria-label="返回顶部">
+  <i data-lucide="arrow-up" class="w-5 h-5"></i>
+</button>
+
+<script>
+  const resume = {
+    personal: {
+      name: "陈成睿",
+      gender: "男",
+      age: 18,
+      location: "江苏徐州",
+      language: "俄语",
+      school: "常州工学院",
+      major: "化学工程与工艺",
+      birthday: "2007.11.18",
+      qq: "2314514243",
+      wechat: "chen_20071118",
+      email: "26250102@czu.cn",
+      hobbies: ["游戏（崩坏：星穹铁道、绝区零、我的世界）", "旅游（上海、新疆、贵州等）"],
+      personality: ["乐观", "腼腆"]
+    },
+    hero: {
+      summary: "常州工学院化学工程与工艺专业准大一学生（2026年入学），高考总分535分，俄语单科110分（位列前15%）。已获达摩院初级与高级人工智能训练师认证，对化工与AI交叉领域充满热情，乐观踏实，乐于团队协作。",
+      badges: [
+        "化学工程与工艺", "俄语高考110", "高考535分",
+        "达摩院AI训练师（初/高级）", "AutoCAD", "Aspen Plus", "Origin"
+      ]
+    },
+    highlights: [
+      { metric: "535", label: "高考总分", icon: "target" },
+      { metric: "110", label: "俄语单科成绩（前15%）", icon: "globe" },
+      { metric: "2项", label: "达摩院AI训练师认证（初+高级）", icon: "bot" },
+      { metric: "前15%", label: "高考成绩排名", icon: "bar-chart-3" }
+    ],
+    experiences: [
+      {
+        type: "校园经历",
+        company: "常州工学院",
+        role: "准大一新生",
+        period: "2026.09 - 至今",
+        points: [
+          "即将进入化学工程与工艺专业学习，已提前了解专业核心课程",
+          "高考俄语110分，具备良好的俄语读写基础",
+          "主动学习化工常用软件AutoCAD、Aspen Plus等"
+        ]
+      },
+      {
+        type: "实习经历",
+        company: "待补充",
+        role: "待补充",
+        period: "待补充",
+        points: [
+          "暂无实习经历，期待在化工相关企业获得实践机会"
+        ]
+      }
+    ],
+    projects: [
+      {
+        name: "个人作品集",
+        role: "摄影与生活记录",
+        period: "2025 - 至今",
+        stack: ["生活摄影", "旅游记录"],
+        result: "用镜头记录生活美好瞬间",
+        points: [
+          "包含旅游（上海、新疆、贵州等）与日常点滴",
+          "通过作品集展示个人审美与观察力"
+        ],
+        link: "#",
+        isGallery: true
+      }
+    ],
+    skills: [
+      {
+        category: "语言能力",
+        icon: "languages",
+        items: [
+          { name: "俄语", level: 73 },
+          { name: "普通话", level: 95 },
+          { name: "英语（基础）", level: 50 }
+        ]
+      },
+      {
+        category: "专业工具",
+        icon: "wrench",
+        items: [
+          { name: "AutoCAD", level: 60 },
+          { name: "Aspen Plus", level: 50 },
+          { name: "Origin", level: 70 },
+          { name: "ChemOffice", level: 55 },
+          { name: "Office", level: 85 }
+        ]
+      },
+      {
+        category: "领域知识",
+        icon: "book-open",
+        items: [
+          { name: "化工基础", level: 60 },
+          { name: "无机化学", level: 55 },
+          { name: "AI基础与数据标注", level: 65 }
+        ]
+      }
+    ],
+    education: {
+      school: "常州工学院",
+      degree: "本科",
+      major: "化学工程与工艺",
+      period: "2026.09 - 2030.06（预计）",
+      gpa: "待补",
+      courses: ["化工原理", "物理化学", "有机化学", "无机及分析化学", "化工热力学", "化学反应工程"]
+    },
+    certificates: [
+      { name: "达摩院初级人工智能训练师", issuer: "阿里巴巴达摩院", year: "2026", level: "初级", img: "zs1.jpg" },
+      { name: "达摩院高级人工智能训练师", issuer: "阿里巴巴达摩院", year: "2026", level: "高级", img: "zs2.jpg" }
+    ],
+    galleryImages: [
+      "worek_1.jpg"
+    ]
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // 初始化 Lucide 图标
+    lucide.createIcons();
+
+    // Hero
+    document.getElementById('heroSummary').textContent = resume.hero.summary;
+    const badgeList = document.getElementById('heroBadges');
+    resume.hero.badges.forEach(b => {
+      const span = document.createElement('span');
+      span.className = 'badge-pill';
+      span.textContent = b;
+      badgeList.appendChild(span);
+    });
+
+    // 亮点
+    const highlightGrid = document.getElementById('highlightGrid');
+    resume.highlights.forEach(h => {
+      const card = document.createElement('div');
+      card.className = 'metric-card glass-card p-4 md:p-6 text-center';
+      card.innerHTML = `
+        <div class="text-2xl md:text-3xl mb-2 flex items-center justify-center">
+          <i data-lucide="${h.icon}" class="w-6 h-6 md:w-7 md:h-7 text-cyan-400"></i>
+        </div>
+        <div class="metric-number text-2xl md:text-4xl">${h.metric}</div>
+        <div class="text-xs md:text-sm text-slate-400 mt-1">${h.label}</div>
+      `;
+      highlightGrid.appendChild(card);
+    });
+
+    // 经历 Tabs
+    const expTypes = [...new Set(resume.experiences.map(e => e.type))];
+    const expTabs = document.getElementById('expTabs');
+    const expPanels = document.getElementById('expPanels');
+    expTypes.forEach((type, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'tab-btn-custom py-2 px-3 md:px-4 rounded-lg text-xs md:text-sm font-medium text-slate-400';
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-selected', idx === 0 ? 'true' : 'false');
+      btn.textContent = type;
+      btn.addEventListener('click', () => activateTab(expTabs, expPanels, idx));
+      expTabs.appendChild(btn);
+
+      const panel = document.createElement('div');
+      panel.className = 'tab-panel-custom ' + (idx === 0 ? 'active' : 'hidden');
+      panel.setAttribute('role', 'tabpanel');
+      const filtered = resume.experiences.filter(e => e.type === type);
+      filtered.forEach(exp => {
+        const card = document.createElement('div');
+        card.className = 'glass-card p-4 md:p-5 mb-3';
+        card.innerHTML = `
+          <div class="flex flex-col gap-2 mb-3">
+            <div class="flex items-center gap-2">
+              <i data-lucide="building-2" class="w-4 h-4 text-cyan-400"></i>
+              <span class="text-base md:text-lg font-bold text-white">${exp.company}</span>
+            </div>
+            <div class="text-sm text-indigo-300 font-medium">${exp.role}</div>
+            <div class="text-xs text-slate-500">${exp.period}</div>
+          </div>
+          <ul class="space-y-1.5">
+            ${exp.points.map(p => `
+              <li class="flex items-start gap-2 text-sm text-slate-300">
+                <span class="text-cyan-400 mt-0.5">▹</span>
+                <span>${p}</span>
+              </li>
+            `).join('')}
+          </ul>
+        `;
+        panel.appendChild(card);
+      });
+      expPanels.appendChild(panel);
+    });
+
+    // 生活瞬间 Tabs
+    const projTabs = document.getElementById('projTabs');
+    const projPanels = document.getElementById('projPanels');
+    const tabBtn = document.createElement('button');
+    tabBtn.className = 'tab-btn-custom py-2 px-3 md:px-4 rounded-lg text-xs md:text-sm font-medium text-slate-400';
+    tabBtn.setAttribute('role', 'tab');
+    tabBtn.setAttribute('aria-selected', 'true');
+    tabBtn.textContent = '生活瞬间';
+    tabBtn.addEventListener('click', () => activateTab(projTabs, projPanels, 0));
+    projTabs.appendChild(tabBtn);
+
+    const panel = document.createElement('div');
+    panel.className = 'tab-panel-custom active';
+    panel.setAttribute('role', 'tabpanel');
+    const grid = document.createElement('div');
+    grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4';
+    resume.galleryImages.forEach((imgSrc, index) => {
+      const item = document.createElement('div');
+      item.className = 'glass-card overflow-hidden cursor-pointer aspect-square rounded-xl transition-all hover:scale-[1.02] hover:border-cyan-400/40';
+      item.setAttribute('tabindex', '0');
+      item.setAttribute('role', 'button');
+      item.setAttribute('aria-label', `查看生活瞬间图片 ${index + 1}`);
+      const img = document.createElement('img');
+      img.src = imgSrc;
+      img.alt = `生活瞬间图片 ${index + 1}`;
+      img.loading = 'lazy';
+      img.className = 'w-full h-full object-cover';
+      img.onerror = function() { this.parentElement.style.display = 'none'; };
+      item.appendChild(img);
+      item.addEventListener('click', () => openLightbox(imgSrc, `生活瞬间图片 ${index + 1}`));
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openLightbox(imgSrc, `生活瞬间图片 ${index + 1}`);
+        }
+      });
+      grid.appendChild(item);
+    });
+    panel.appendChild(grid);
+    projPanels.appendChild(panel);
+
+    // 技能矩阵
+    const skillsGrid = document.getElementById('skillsGrid');
+    resume.skills.forEach(cat => {
+      const div = document.createElement('div');
+      div.className = 'glass-card p-4 md:p-5';
+      let itemsHtml = '';
+      cat.items.forEach(item => {
+        itemsHtml += `
+          <div class="mb-3 last:mb-0">
+            <div class="flex justify-between items-center mb-1.5">
+              <span class="text-xs md:text-sm font-medium text-slate-200">${item.name}</span>
+              <span class="text-xs text-slate-500">${item.level}%</span>
+            </div>
+            <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+              <div class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400" style="width:${item.level}%; transition:width 0.6s ease;"></div>
+            </div>
+          </div>
+        `;
+      });
+      div.innerHTML = `
+        <div class="flex items-center gap-2 mb-3">
+          <i data-lucide="${cat.icon}" class="w-4 h-4 text-cyan-400"></i>
+          <h3 class="text-sm md:text-base font-bold text-white">${cat.category}</h3>
+        </div>
+        ${itemsHtml}
+      `;
+      skillsGrid.appendChild(div);
+    });
+
+    // 教育
+    const eduCard = document.getElementById('eduCard');
+    eduCard.innerHTML = `
+      <div class="flex items-center gap-3">
+        <i data-lucide="school" class="w-6 h-6 text-cyan-400"></i>
+        <div>
+          <div class="text-lg md:text-xl font-extrabold text-white">${resume.education.school}</div>
+          <div class="text-sm text-indigo-300 font-medium">${resume.education.major} · ${resume.education.degree}</div>
+          <div class="text-xs text-slate-500">${resume.education.period}</div>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 mt-3">
+        ${resume.education.courses.map(c => `<span class="badge-pill">${c}</span>`).join('')}
+      </div>
+    `;
+
+    // 证书
+    const certList = document.getElementById('certList');
+    resume.certificates.forEach(cert => {
+      const div = document.createElement('div');
+      div.className = 'glass-card p-4 flex items-start gap-3';
+      const detail = [cert.issuer, cert.year, cert.level].filter(d => d && d !== '' && d !== '待补').join(' · ');
+      let imgHtml = '';
+      if (cert.img) {
+        imgHtml = `<img src="${cert.img}" alt="${cert.name}" class="cert-img w-full mt-2 rounded-lg border border-white/10" loading="lazy">`;
+      }
+      div.innerHTML = `
+        <i data-lucide="award" class="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5"></i>
+        <div class="flex-1">
+          <div class="text-sm md:text-base font-bold text-white">${cert.name}</div>
+          <div class="text-xs text-slate-500">${detail}</div>
+          ${imgHtml}
+        </div>
+      `;
+      certList.appendChild(div);
+    });
+
+    // Lightbox
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxCaption = document.getElementById('lightboxCaption');
+    const lightboxClose = document.getElementById('lightboxClose');
+
+    function openLightbox(src, caption) {
+      lightboxImg.src = src;
+      lightboxCaption.textContent = caption;
+      lightbox.classList.remove('hidden');
+      lightbox.classList.add('flex');
+      setTimeout(() => { lightbox.classList.remove('opacity-0'); }, 10);
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      lightbox.classList.add('opacity-0');
+      setTimeout(() => {
+        lightbox.classList.add('hidden');
+        lightbox.classList.remove('flex');
+        lightboxImg.src = '';
+        lightboxCaption.textContent = '';
+      }, 200);
+      document.body.style.overflow = '';
+    }
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+
+    // 返回顶部
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 400) {
+        backToTop.classList.remove('opacity-0', 'pointer-events-none');
+      } else {
+        backToTop.classList.add('opacity-0', 'pointer-events-none');
+      }
+    }, { passive: true });
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // 打印
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+    // 通用复制函数 + Toast
+    const toast = document.getElementById('toast');
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('visible');
+      setTimeout(() => { toast.classList.remove('visible'); }, 2200);
+    }
+    function copyText(text, successMsg) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => showToast('✅ ' + successMsg));
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('✅ ' + successMsg);
+      }
+    }
+
+    // 邮箱复制
+    document.getElementById('copyEmailBtn').addEventListener('click', () => {
+      copyText(resume.personal.email, '邮箱已复制');
+    });
+
+    // QQ 复制
+    document.getElementById('copyQQBtn').addEventListener('click', () => {
+      copyText('2314514243', 'QQ 已复制');
+    });
+
+    // 微信复制
+    document.getElementById('copyWeChatBtn').addEventListener('click', () => {
+      copyText('chen_20071118', '微信已复制');
+    });
+
+    // Tab 激活
+    function activateTab(tabList, panelContainer, index) {
+      const tabs = tabList.querySelectorAll('.tab-btn-custom');
+      const panels = panelContainer.querySelectorAll('.tab-panel-custom');
+      tabs.forEach((t, i) => {
+        t.setAttribute('aria-selected', i === index ? 'true' : 'false');
+      });
+      panels.forEach((p, i) => {
+        if (i === index) {
+          p.classList.remove('hidden');
+          p.classList.add('active');
+        } else {
+          p.classList.add('hidden');
+          p.classList.remove('active');
+        }
+      });
+    }
+
+    // 键盘 Tab 切换
+    document.querySelectorAll('.tabs-custom').forEach(tabList => {
+      const tabs = tabList.querySelectorAll('.tab-btn-custom');
+      tabList.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+          const currentIndex = Array.from(tabs).findIndex(t => t.getAttribute('aria-selected') === 'true');
+          let nextIndex = e.key === 'ArrowRight' ? (currentIndex + 1) % tabs.length : (currentIndex - 1 + tabs.length) % tabs.length;
+          tabs[nextIndex].click();
+          tabs[nextIndex].focus();
+          e.preventDefault();
+        }
+      });
+    });
+
+    // 重新初始化图标（包含新按钮）
+    lucide.createIcons();
+
+    // ===== 动态 Canvas 粒子背景 + 形状切换 =====
+    (function initBgCanvas() {
+      const canvas = document.getElementById('bgCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isMobile = window.matchMedia('(max-width: 767px)').matches;
+
+      // 形状配置：绘制函数 + 粒子色 + 光斑色（切换时同步驱动 .glow-bg 与粒子色）
+      const SHAPES = {
+        heart: {
+          particle: '#22d3ee',
+          glow1: 'rgba(6,182,212,0.12)',
+          glow2: 'rgba(8,145,178,0.16)',
+          draw: function(c, x) {
+            x.beginPath();
+            let first = true;
+            for (let t = 0; t <= Math.PI * 2; t += 0.01) {
+              const px = 16 * Math.pow(Math.sin(t), 3);
+              const py = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+              const dx = c.width / 2 + px * 10;
+              const dy = c.height / 2 - py * 10; // canvas y 向下，数学 y 正向画到上方
+              if (first) { x.moveTo(dx, dy); first = false; } else x.lineTo(dx, dy);
+            }
+            x.closePath();
+            x.fill();
+          }
+        },
+        star: {
+          particle: '#a78bfa',
+          glow1: 'rgba(139,92,246,0.14)',
+          glow2: 'rgba(167,139,250,0.16)',
+          draw: function(c, x) {
+            const cx = c.width / 2, cy = c.height / 2;
+            const outer = 180, inner = 72, spikes = 5;
+            x.beginPath();
+            for (let i = 0; i < spikes * 2; i++) {
+              const r = i % 2 === 0 ? outer : inner;
+              const a = (Math.PI / spikes) * i - Math.PI / 2;
+              const dx = cx + Math.cos(a) * r;
+              const dy = cy + Math.sin(a) * r;
+              if (i === 0) x.moveTo(dx, dy); else x.lineTo(dx, dy);
+            }
+            x.closePath();
+            x.fill();
+          }
+        },
+        cap: {
+          particle: '#34d399',
+          glow1: 'rgba(16,185,129,0.14)',
+          glow2: 'rgba(52,211,153,0.16)',
+          draw: function(c, x) {
+            const cx = c.width / 2, cy = c.height / 2;
+            // 菱形顶板
+            x.beginPath();
+            x.moveTo(cx, cy - 90);
+            x.lineTo(cx + 160, cy - 20);
+            x.lineTo(cx, cy + 50);
+            x.lineTo(cx - 160, cy - 20);
+            x.closePath();
+            x.fill();
+            // 帽体
+            x.fillRect(cx - 60, cy + 10, 120, 70);
+            // 流苏圆点
+            x.beginPath();
+            x.arc(cx + 120, cy - 10, 12, 0, Math.PI * 2);
+            x.fill();
+          }
+        },
+        chen: {
+          particle: '#fbbf24',
+          glow1: 'rgba(245,158,11,0.14)',
+          glow2: 'rgba(251,191,36,0.16)',
+          draw: function(c, x) {
+            x.font = 'bold 300px "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif';
+            x.textAlign = 'center';
+            x.textBaseline = 'middle';
+            x.fillText('陈', c.width / 2, c.height / 2);
+          }
+        }
+      };
+
+      // 离屏采样：把形状画到 400x400 离屏 canvas，取 alpha>128 的像素点
+      function sampleTargets(shapeKey, N, vw, vh) {
+        const off = document.createElement('canvas');
+        const S = 400;
+        off.width = off.height = S;
+        const oc = off.getContext('2d');
+        oc.fillStyle = '#fff';
+        SHAPES[shapeKey].draw(off, oc);
+        const data = oc.getImageData(0, 0, S, S).data;
+        const pts = [];
+        for (let y = 0; y < S; y += 2) {
+          for (let xx = 0; xx < S; xx += 2) {
+            if (data[(y * S + xx) * 4 + 3] > 128) pts.push({ x: xx / S, y: y / S });
+          }
+        }
+        // 洗牌（Fisher-Yates）
+        for (let i = pts.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          const tmp = pts[i]; pts[i] = pts[j]; pts[j] = tmp;
+        }
+        const scale = Math.min(vw, vh) * 0.55;
+        const cx = vw / 2, cy = vh / 2;
+        const targets = [];
+        for (let i = 0; i < N && i < pts.length; i++) {
+          targets.push({ x: cx + (pts[i].x - 0.5) * scale, y: cy + (pts[i].y - 0.5) * scale });
+        }
+        return targets;
+      }
+
+      // 粒子
+      function Particle(x, y) {
+        this.x = x; this.y = y;
+        this.tx = x; this.ty = y;
+        this.vx = 0; this.vy = 0;
+        this.size = 1.2 + Math.random() * 1.6;
+        this.phase = Math.random() * Math.PI * 2;
+      }
+      Particle.prototype.setTarget = function(tx, ty) { this.tx = tx; this.ty = ty; };
+      Particle.prototype.update = function() {
+        const k = 0.045, damp = 0.86;
+        this.vx = (this.vx + (this.tx - this.x) * k) * damp;
+        this.vy = (this.vy + (this.ty - this.y) * k) * damp;
+        this.phase += 0.03;
+        this.x += this.vx + Math.sin(this.phase) * 0.4;
+        this.y += this.vy + Math.cos(this.phase) * 0.4;
+      };
+      Particle.prototype.draw = function(x, color) {
+        x.fillStyle = color;
+        x.shadowBlur = 8;
+        x.shadowColor = color;
+        x.beginPath();
+        x.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        x.fill();
+      };
+
+      // 状态
+      let particles = [];
+      let rafId = null;
+      let currentShape = 'heart';
+      let lastTs = 0;
+      let vw = 0, vh = 0;
+      let particleColor = SHAPES.heart.particle;
+      const drawConnections = !isMobile;
+
+      function resize() {
+        vw = window.innerWidth;
+        vh = window.innerHeight;
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        canvas.width = vw * dpr;
+        canvas.height = vh * dpr;
+        canvas.style.width = vw + 'px';
+        canvas.style.height = vh + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const N = isMobile ? 60 : Math.min(140, Math.floor(vw * vh / 14000));
+        while (particles.length < N) particles.push(new Particle(vw / 2, vh / 2));
+        if (particles.length > N) particles.length = N;
+        const targets = sampleTargets(currentShape, N, vw, vh);
+        particles.forEach(function(p, i) { if (targets[i]) p.setTarget(targets[i].x, targets[i].y); });
+      }
+
+      function hexToRgb(hex) {
+        return parseInt(hex.slice(1, 3), 16) + ',' + parseInt(hex.slice(3, 5), 16) + ',' + parseInt(hex.slice(5, 7), 16);
+      }
+
+      function loop(ts) {
+        lastTs = ts;
+        ctx.clearRect(0, 0, vw, vh);
+        ctx.shadowBlur = 0;
+        const rgb = hexToRgb(particleColor);
+        if (drawConnections) {
+          for (let i = 0; i < particles.length; i++) {
+            const a = particles[i];
+            for (let j = i + 1; j < particles.length; j++) {
+              const b = particles[j];
+              const dx = a.x - b.x, dy = a.y - b.y;
+              const d2 = dx * dx + dy * dy;
+              if (d2 < 12100) { // 110^2
+                const alpha = 0.12 * (1 - d2 / 12100);
+                ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
+                ctx.lineWidth = 0.6;
+                ctx.beginPath();
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.stroke();
+              }
+            }
+          }
+        }
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].update();
+          particles[i].draw(ctx, particleColor);
+        }
+        rafId = requestAnimationFrame(loop);
+      }
+
+      function switchShape(key) {
+        if (!SHAPES[key]) return;
+        currentShape = key;
+        const cfg = SHAPES[key];
+        particleColor = cfg.particle;
+        // 同步切 CSS 变量 → .glow-bg 光斑色平滑过渡（1.2s）+ 粒子色
+        document.documentElement.style.setProperty('--accent-particle', cfg.particle);
+        document.documentElement.style.setProperty('--accent-glow-1', cfg.glow1);
+        document.documentElement.style.setProperty('--accent-glow-2', cfg.glow2);
+        const targets = sampleTargets(key, particles.length, vw, vh);
+        particles.forEach(function(p, i) { if (targets[i]) p.setTarget(targets[i].x, targets[i].y); });
+        document.querySelectorAll('#shapeSwitcher .shape-btn').forEach(function(b) {
+          b.classList.toggle('shape-btn--active', b.dataset.shape === key);
+        });
+      }
+
+      // 绑定切换按钮
+      document.querySelectorAll('#shapeSwitcher .shape-btn').forEach(function(b) {
+        b.addEventListener('click', function() { switchShape(b.dataset.shape); });
+      });
+
+      // resize debounce
+      let resizeTimer = null;
+      window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(resize, 200);
+      });
+
+      // 标签页隐藏时暂停 rAF 省电
+      document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+          if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+        } else if (!reduceMotion && !rafId) {
+          lastTs = performance.now();
+          rafId = requestAnimationFrame(loop);
+        }
+      });
+
+      // 启动：等字体就绪后采样（"陈"字依赖中文字体回退渲染）
+      function start() {
+        resize();
+        if (reduceMotion) {
+          ctx.clearRect(0, 0, vw, vh);
+          for (let i = 0; i < particles.length; i++) particles[i].draw(ctx, particleColor);
+        } else {
+          lastTs = performance.now();
+          rafId = requestAnimationFrame(loop);
+        }
+      }
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(start);
+      } else {
+        start();
+      }
+    })();
+  });
+</script>
+</body>
+</html><!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>陈成睿 · 个人简历</title><meta name="description" content="个人简历页面"><link rel="stylesheet" href="styles.css"></head><body><canvas id="particle-canvas"></canvas><div id="shape-container"></div><div class="container"><h1>陈成睿</h1><h2>前端开发工程师</h2><div class="contact-info"><p>📧 chengru@example.com</p><p>📱 138****0000</p><p>📍 北京市朝阳区</p></div><div class="section"><h3>专业技能</h3><ul><li>HTML5 / CSS3 / JavaScript</li><li>React / Vue</li><li>Node.js</li><li>Git / Docker</li></ul></div><div class="section"><h3>工作经历</h3><div class="job"><h4>前端开发工程师</h4><p>某科技公司 | 2020 - 至今</p><ul><li>负责公司核心产品的前端开发</li><li>优化页面性能，提升用户体验</li></ul></div></div><div class="section"><h3>项目经验</h3><div class="project"><h4>企业官网重构</h4><p>使用 React + TypeScript 重构企业官网，提升加载速度</p></div></div><div class="section"><h3>教育背景</h3><p>某某大学 | 计算机科学与技术 | 本科</p></div><div class="footer"><p>© 2026 陈成睿</p></div></div><script src="script.js"></script></body></html>
