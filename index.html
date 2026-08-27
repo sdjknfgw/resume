@@ -48,6 +48,68 @@
   /* 真实隐藏滚动条（原 scrollbar-none 非 Tailwind 默认类，此处补齐跨浏览器实现） */
   .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
   .scrollbar-none::-webkit-scrollbar { display: none; }
+
+  /* ===== 顶部阅读进度条 ===== */
+  #readProgress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+    z-index: 60;
+    background: linear-gradient(90deg, #4f46e5, #06b6d4);
+    box-shadow: 0 0 10px rgba(6,182,212,0.6);
+    transition: width 0.08s linear;
+  }
+
+  /* ===== 区块标题：渐变文字 + 渐变短下划线 ===== */
+  .section-title {
+    background: linear-gradient(90deg, #e0e7ff 0%, #22d3ee 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative; display: inline-block; padding-bottom: 7px;
+  }
+  .section-title::after {
+    content: ""; position: absolute; left: 0; bottom: 0;
+    width: 44px; height: 3px; border-radius: 3px;
+    background: linear-gradient(90deg, #4f46e5, #06b6d4);
+    box-shadow: 0 0 8px rgba(6,182,212,0.5);
+  }
+
+  /* ===== 玻璃卡片光标聚光 ===== */
+  .glass-card { position: relative; overflow: hidden; }
+  .glass-card::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(200px circle at var(--cx, 50%) var(--cy, 50%),
+                rgba(99,102,241,0.16), transparent 60%);
+    opacity: 0; transition: opacity 0.35s ease;
+  }
+  .glass-card:hover::after { opacity: 1; }
+
+  /* ===== Hero 头像旋转光环 + 名字辉光 ===== */
+  .avatar-ring { position: relative; }
+  .avatar-ring::before {
+    content: ""; position: absolute; inset: -6px; border-radius: 9999px;
+    background: conic-gradient(from 0deg, #4f46e5, #06b6d4, #818cf8, #4f46e5);
+    z-index: -1; filter: blur(7px); opacity: 0.75;
+    animation: avatarSpin 8s linear infinite;
+  }
+  @keyframes avatarSpin { to { transform: rotate(360deg); } }
+  .hero-name { text-shadow: 0 0 30px rgba(99,102,241,0.35); }
+
+  /* ===== 流动渐变背景 mesh ===== */
+  #meshBg {
+    position: fixed; inset: -20%; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(40% 40% at 18% 28%, rgba(79,70,229,0.10), transparent 60%),
+      radial-gradient(36% 36% at 82% 72%, rgba(6,182,212,0.08), transparent 60%),
+      radial-gradient(30% 30% at 60% 18%, rgba(129,140,248,0.07), transparent 60%);
+    animation: meshDrift 18s ease-in-out infinite alternate;
+  }
+  @keyframes meshDrift {
+    0%   { transform: translate(0,0) scale(1); }
+    100% { transform: translate(2%, -3%) scale(1.08); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .avatar-ring::before, #meshBg { animation: none !important; }
+  }
+
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
     background: #030712;
@@ -60,7 +122,6 @@
 
   /* ===== 主题强调色变量（动态背景色切换驱动） ===== */
   :root {
-    --accent-particle: #22d3ee;              /* 默认 heart · 青：粒子+连线色 */
     --accent-glow-1: rgba(6,182,212,0.12);   /* .glow-bg::before 光斑（左上） */
     --accent-glow-2: rgba(79,70,229,0.15);   /* .glow-bg::after 光斑（右下） */
   }
@@ -465,13 +526,35 @@
   @media (prefers-reduced-motion: reduce) {
     * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; scroll-behavior: auto !important; }
   }
+
+  /* ===== 跳转主内容（无障碍） ===== */
+  .skip-link {
+    position: fixed; top: 8px; left: 8px; z-index: 200;
+    background: #4f46e5; color: #fff; padding: 8px 14px; border-radius: 8px;
+    font-size: 0.85rem; font-weight: 600;
+    transform: translateY(-150%);
+    transition: transform 0.2s ease;
+  }
+  .skip-link:focus { transform: translateY(0); outline: 2px solid #22d3ee; outline-offset: 2px; }
 </style>
 </head>
 <body>
 
+<a href="#main" class="skip-link">跳到主内容</a>
+
+<noscript>
+  <style>#splash { display: none !important; }</style>
+  <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#030712;color:#e2e8f0;text-align:center;padding:24px;font-family:sans-serif;z-index:300;">
+    <div>
+      <h1 style="font-size:1.6rem;margin-bottom:12px;font-weight:800;">陈成睿 · 个人简历</h1>
+      <p style="color:#94a3b8;line-height:1.8;">本简历需要启用 JavaScript 才能查看完整内容。<br>请开启 JavaScript 后重新打开本页面。</p>
+    </div>
+  </div>
+</noscript>
+
 <!-- ===== 开屏动画 ===== -->
 <div id="splash">
-  <canvas id="splashCanvas"></canvas>
+  <canvas id="splashCanvas" aria-hidden="true"></canvas>
   <div class="splash-inner">
     <div class="splash-title">
       <div class="splash-name">陈成睿</div>
@@ -484,14 +567,16 @@
 
 <!-- ===== 背景光斑 ===== -->
 <div class="glow-bg"></div>
+<div id="meshBg" aria-hidden="true"></div>
 
 <!-- ===== 动态 Canvas 粒子背景（形状聚合，z-1 浮于光斑之上、内容之下） ===== -->
-<canvas id="bgCanvas" class="fixed inset-0 pointer-events-none" style="z-index:1;"></canvas>
+<canvas id="bgCanvas" class="fixed inset-0 pointer-events-none" style="z-index:1;" aria-hidden="true"></canvas>
 
 <!-- ===== 鼠标光标背景高亮 ===== -->
-<div id="cursorGlow"></div>
+<div id="cursorGlow" aria-hidden="true"></div>
 
 <!-- ===== 导航栏 ===== -->
+<div id="readProgress" aria-hidden="true"></div>
 <nav class="navbar-blur fixed top-0 left-0 right-0 z-50" aria-label="主导航">
   <div class="max-w-5xl mx-auto px-4 h-14 md:h-16 flex items-center justify-between gap-2">
     <a href="#hero" class="text-lg md:text-xl font-extrabold text-white hover:text-cyan-400 transition-colors whitespace-nowrap">陈成睿</a>
@@ -511,17 +596,19 @@
 </nav>
 
 <!-- ===== 主内容 ===== -->
-<main class="relative z-10 pt-14 md:pt-16">
+<main id="main" tabindex="-1" class="relative z-10 pt-14 md:pt-16 focus:outline-none">
 
   <!-- Hero 区 -->
   <section id="hero" class="py-10 md:py-16">
     <div class="max-w-5xl mx-auto px-4">
       <div class="flex flex-col md:flex-row items-center md:items-center gap-6 md:gap-10 text-center md:text-left">
-        <div class="w-28 h-28 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-indigo-400/40 shadow-2xl flex-shrink-0">
-          <img src="logo.jpg" alt="陈成睿的大头照" class="w-full h-full object-cover" onerror="this.style.display='none';var p=this.parentElement;p.style.display='flex';p.style.alignItems='center';p.style.justifyContent='center';p.style.fontSize='2rem';p.style.fontWeight='700';p.style.color='#fff';p.textContent='陈';">
+        <div class="avatar-ring w-28 h-28 md:w-40 md:h-40 flex-shrink-0">
+          <div class="w-full h-full rounded-full overflow-hidden border-4 border-indigo-400/40 shadow-2xl">
+            <img src="logo.jpg" alt="陈成睿的大头照" class="w-full h-full object-cover" onerror="this.style.display='none';var p=this.parentElement;p.style.display='flex';p.style.alignItems='center';p.style.justifyContent='center';p.style.fontSize='2rem';p.style.fontWeight='700';p.style.color='#fff';p.textContent='陈';">
+          </div>
         </div>
         <div class="flex-1">
-          <h1 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight">陈成睿</h1>
+          <h1 class="hero-name text-3xl md:text-5xl font-extrabold text-white tracking-tight">陈成睿</h1>
           <p class="text-sm md:text-base text-cyan-400 font-medium mt-1">化学工程与工艺 · 常州工学院 · 俄语考生</p>
           <p id="heroSummary" class="text-sm md:text-base text-slate-300 max-w-xl mt-3 leading-relaxed"></p>
           <div id="heroBadges" class="flex flex-wrap gap-2 mt-4 justify-center md:justify-start"></div>
@@ -540,7 +627,7 @@
     <div class="max-w-5xl mx-auto px-4">
       <div class="flex items-center gap-3 mb-5">
         <i data-lucide="user-round" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400"></i>
-        <h2 class="text-xl md:text-2xl font-extrabold text-white">关于我</h2>
+        <h2 class="section-title text-xl md:text-2xl font-extrabold text-white">关于我</h2>
       </div>
       <p class="text-sm text-slate-400 mb-6">个人基本信息与兴趣性格</p>
       <div id="aboutGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5"></div>
@@ -552,7 +639,7 @@
     <div class="max-w-5xl mx-auto px-4">
       <div class="flex items-center gap-3 mb-5">
         <i data-lucide="trending-up" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400"></i>
-        <h2 class="text-xl md:text-2xl font-extrabold text-white">亮点成果</h2>
+        <h2 class="section-title text-xl md:text-2xl font-extrabold text-white">亮点成果</h2>
       </div>
       <p class="text-sm text-slate-400 mb-6">关键成就与量化指标</p>
       <div id="highlightGrid" class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5"></div>
@@ -564,7 +651,7 @@
     <div class="max-w-5xl mx-auto px-4">
       <div class="flex items-center gap-3 mb-5">
         <i data-lucide="briefcase" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400"></i>
-        <h2 class="text-xl md:text-2xl font-extrabold text-white">经历</h2>
+        <h2 class="section-title text-xl md:text-2xl font-extrabold text-white">经历</h2>
       </div>
       <p class="text-sm text-slate-400 mb-4">校园 · 实习 · 其他</p>
       <div id="expTabs" class="tabs-custom flex gap-1 bg-slate-900/50 border border-white/10 rounded-xl p-1 mb-5 overflow-x-auto scrollbar-none" role="tablist" aria-label="经历分类"></div>
@@ -577,7 +664,7 @@
     <div class="max-w-5xl mx-auto px-4">
       <div class="flex items-center gap-3 mb-5">
         <i data-lucide="camera" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400"></i>
-        <h2 class="text-xl md:text-2xl font-extrabold text-white">生活瞬间</h2>
+        <h2 class="section-title text-xl md:text-2xl font-extrabold text-white">生活瞬间</h2>
       </div>
       <p class="text-sm text-slate-400 mb-4">记录生活中的美好瞬间</p>
       <div id="projTabs" class="tabs-custom flex gap-1 bg-slate-900/50 border border-white/10 rounded-xl p-1 mb-5 overflow-x-auto scrollbar-none" role="tablist" aria-label="生活瞬间分类"></div>
@@ -590,7 +677,7 @@
     <div class="max-w-5xl mx-auto px-4">
       <div class="flex items-center gap-3 mb-5">
         <i data-lucide="wrench" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400"></i>
-        <h2 class="text-xl md:text-2xl font-extrabold text-white">技能矩阵</h2>
+        <h2 class="section-title text-xl md:text-2xl font-extrabold text-white">技能矩阵</h2>
       </div>
       <p class="text-sm text-slate-400 mb-6">语言 · 工具 · 领域</p>
       <div id="skillsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5"></div>
@@ -602,7 +689,7 @@
     <div class="max-w-5xl mx-auto px-4">
       <div class="flex items-center gap-3 mb-5">
         <i data-lucide="graduation-cap" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400"></i>
-        <h2 class="text-xl md:text-2xl font-extrabold text-white">教育与证书</h2>
+        <h2 class="section-title text-xl md:text-2xl font-extrabold text-white">教育与证书</h2>
       </div>
       <p class="text-sm text-slate-400 mb-6">学术背景与专业资质</p>
       <div id="eduCard" class="glass-card p-5 md:p-6 mb-5"></div>
@@ -615,7 +702,7 @@
     <div class="max-w-5xl mx-auto px-4">
       <div class="flex items-center gap-3 mb-5">
         <i data-lucide="contact" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400"></i>
-        <h2 class="text-xl md:text-2xl font-extrabold text-white">联系方式</h2>
+        <h2 class="section-title text-xl md:text-2xl font-extrabold text-white">联系方式</h2>
       </div>
       <p class="text-sm text-slate-400 mb-6">期待与您沟通</p>
       <div id="contactGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6"></div>
@@ -1253,8 +1340,10 @@
         }
       };
 
-      // 离屏采样：把形状画到 400x400 离屏 canvas，取 alpha>128 的像素点
-      function sampleTargets(shapeKey, N, vw, vh) {
+      // 离屏采样：把形状画到 400x400 离屏 canvas，取 alpha>128 的归一化像素点（按形状缓存，避免每次切换重复栅格化）
+      const shapePointCache = new Map();
+      function getShapePoints(shapeKey) {
+        if (shapePointCache.has(shapeKey)) return shapePointCache.get(shapeKey);
         const off = document.createElement('canvas');
         const S = 400;
         off.width = off.height = S;
@@ -1273,6 +1362,11 @@
           const j = Math.floor(Math.random() * (i + 1));
           const tmp = pts[i]; pts[i] = pts[j]; pts[j] = tmp;
         }
+        shapePointCache.set(shapeKey, pts);
+        return pts;
+      }
+      function sampleTargets(shapeKey, N, vw, vh) {
+        const pts = getShapePoints(shapeKey);
         const scale = Math.min(vw, vh) * 0.55;
         const cx = vw / 2, cy = vh / 2;
         const targets = [];
@@ -1301,8 +1395,6 @@
       };
       Particle.prototype.draw = function(x, color) {
         x.fillStyle = color;
-        x.shadowBlur = 8;
-        x.shadowColor = color;
         x.beginPath();
         x.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         x.fill();
@@ -1397,10 +1489,12 @@
             }
           }
         }
+        ctx.globalCompositeOperation = 'lighter';
         for (let i = 0; i < particles.length; i++) {
           particles[i].update();
           particles[i].draw(ctx, particleColor);
         }
+        ctx.globalCompositeOperation = 'source-over';
         // 鼠标交互：附近粒子与光标连线（高级感）
         if (mouse.active && drawConnections) {
           for (let i = 0; i < particles.length; i++) {
@@ -1454,8 +1548,7 @@
         currentShape = key;
         const cfg = SHAPES[key];
         particleColor = cfg.particle;
-        // 同步切 CSS 变量 → .glow-bg 光斑色平滑过渡（1.2s）+ 粒子色
-        document.documentElement.style.setProperty('--accent-particle', cfg.particle);
+        // 同步切 CSS 变量 → .glow-bg 光斑色平滑过渡（1.2s）
         document.documentElement.style.setProperty('--accent-glow-1', cfg.glow1);
         document.documentElement.style.setProperty('--accent-glow-2', cfg.glow2);
         const targets = sampleTargets(key, particles.length, vw, vh);
@@ -1471,7 +1564,7 @@
         shapeTimer = setInterval(function() {
           shapeIndex = (shapeIndex + 1) % SHAPE_ORDER.length;
           switchShape(SHAPE_ORDER[shapeIndex]);
-        }, 1000);
+        }, 5000);
       }
       function stopAutoSwitch() {
         if (shapeTimer) { clearInterval(shapeTimer); shapeTimer = null; }
@@ -1580,17 +1673,19 @@
             }
           }
         }
+        ctx.globalCompositeOperation = 'lighter';
         for (const p of parts) {
           p.x += p.vx; p.y += p.vy;
           if (p.y > h + 6) { p.y = -6; p.x = Math.random() * w; } // 落到底部回到顶部
           if (p.x < -6) p.x = w + 6; else if (p.x > w + 6) p.x = -6;
           ctx.globalAlpha = p.a;
           ctx.fillStyle = p.c;
-          ctx.shadowBlur = 6; ctx.shadowColor = p.c;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
           ctx.fill();
         }
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'source-over';
         // 流星：淡入 → 飞掠 → 淡出，循环重生
         for (const mt of meteors) {
           mt.x += mt.vx; mt.y += mt.vy; mt.life++;
@@ -1639,12 +1734,15 @@
       if (!splash) return;
       splash.classList.add('is-hidden');
       if (splashParticles) splashParticles.stop();
+      const mainEl = document.getElementById('main');
+      if (mainEl) mainEl.focus({ preventScroll: true }); // 进入后焦点回到主内容
     }
 
     // 开屏「打开我的简历」按钮：点击进入简历
     const enterResumeBtn = document.getElementById('enterResumeBtn');
     if (enterResumeBtn) {
       enterResumeBtn.addEventListener('click', hideSplash);
+      enterResumeBtn.focus({ preventScroll: true }); // 键盘用户可直接回车进入
     }
     // 兜底：若用户一直未点击，12s 后自动进入（避免卡在开屏）
     setTimeout(hideSplash, 12000);
@@ -1707,6 +1805,37 @@
         });
       }, { rootMargin: '0px 0px -10% 0px', threshold: 0.15 });
       blocks.forEach(b => revObs.observe(b));
+    })();
+
+    // 顶部阅读进度条
+    (function initScrollProgress() {
+      const bar = document.getElementById('readProgress');
+      if (!bar) return;
+      let ticking = false;
+      function update() {
+        const h = document.documentElement;
+        const max = h.scrollHeight - h.clientHeight;
+        const top = h.scrollTop || document.body.scrollTop || 0;
+        bar.style.width = (max > 0 ? (top / max) * 100 : 0) + '%';
+        ticking = false;
+      }
+      window.addEventListener('scroll', () => {
+        if (!ticking) { ticking = true; requestAnimationFrame(update); }
+      }, { passive: true });
+      update();
+    })();
+
+    // 玻璃卡片光标聚光（hover 时跟随鼠标的高光）
+    (function initCardSpotlight() {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) return;
+      document.addEventListener('mousemove', (e) => {
+        const card = e.target.closest && e.target.closest('.glass-card');
+        if (!card) return;
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--cx', (e.clientX - r.left) + 'px');
+        card.style.setProperty('--cy', (e.clientY - r.top) + 'px');
+      }, { passive: true });
     })();
   });
 </script>
