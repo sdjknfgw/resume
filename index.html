@@ -94,46 +94,6 @@
     transition: background 1.2s ease;
   }
 
-  /* ===== 形状切换按钮组（nav 内集成） ===== */
-  #shapeSwitcher {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-  #shapeSwitcher .shape-btn {
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 9999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(15, 23, 42, 0.45);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    color: #94a3b8;
-    cursor: pointer;
-    transition: color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease, transform 0.25s ease;
-  }
-  #shapeSwitcher .shape-btn:hover {
-    color: #22d3ee;
-    border-color: rgba(34, 211, 238, 0.4);
-    box-shadow: 0 0 18px rgba(34, 211, 238, 0.25);
-  }
-  /* 奇偶错位（水平排列下用 translateY 微错位营造层次） */
-  #shapeSwitcher .shape-btn:nth-child(odd) { transform: translateY(-3px); }
-  #shapeSwitcher .shape-btn:nth-child(even) { transform: translateY(3px); }
-  #shapeSwitcher .shape-btn:nth-child(odd):hover,
-  #shapeSwitcher .shape-btn:nth-child(even):hover { transform: translateY(0); }
-  #shapeSwitcher .shape-btn--active {
-    background: rgba(34, 211, 238, 0.18);
-    border-color: rgba(34, 211, 238, 0.55);
-    color: #67e8f9;
-    box-shadow: 0 0 22px rgba(34, 211, 238, 0.35);
-  }
-  #shapeSwitcher .shape-btn--active:nth-child(odd),
-  #shapeSwitcher .shape-btn--active:nth-child(even) { transform: translateY(0); }
-
   /* ===== 毛玻璃卡片 ===== */
   .glass-card {
     background: rgba(15, 23, 42, 0.6);
@@ -281,7 +241,7 @@
 
   /* ===== 打印样式 ===== */
   @media print {
-    .navbar-blur, .glow-bg, .toast, .btn-glow, .back-to-top, .btn, .tabs-custom, .lightbox, #bgCanvas, #shapeSwitcher {
+    .navbar-blur, .glow-bg, .toast, .btn-glow, .back-to-top, .btn, .tabs-custom, .lightbox, #bgCanvas {
       display: none !important;
     }
     body {
@@ -344,12 +304,6 @@
       <a href="#contact" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">联系方式</a>
     </div>
     <div class="flex gap-2 flex-shrink-0 items-center">
-      <nav id="shapeSwitcher" aria-label="背景主题切换" class="hidden md:flex">
-        <button data-shape="heart" class="shape-btn shape-btn--active" aria-label="热情 · 心形"><i data-lucide="heart" class="w-4 h-4"></i></button>
-        <button data-shape="star" class="shape-btn" aria-label="亮点 · 星形"><i data-lucide="sparkles" class="w-4 h-4"></i></button>
-        <button data-shape="cap" class="shape-btn" aria-label="教育 · 毕业帽"><i data-lucide="graduation-cap" class="w-4 h-4"></i></button>
-        <button data-shape="chen" class="shape-btn" aria-label="个人 · 陈"><i data-lucide="user" class="w-4 h-4"></i></button>
-      </nav>
       <button id="printBtn" class="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full border border-white/10 text-slate-400 hover:text-cyan-400 hover:border-cyan-400/30 transition-all" aria-label="打印简历">🖨️</button>
     </div>
   </div>
@@ -1125,15 +1079,22 @@
         document.documentElement.style.setProperty('--accent-glow-2', cfg.glow2);
         const targets = sampleTargets(key, particles.length, vw, vh);
         particles.forEach(function(p, i) { if (targets[i]) p.setTarget(targets[i].x, targets[i].y); });
-        document.querySelectorAll('#shapeSwitcher .shape-btn').forEach(function(b) {
-          b.classList.toggle('shape-btn--active', b.dataset.shape === key);
-        });
       }
 
-      // 绑定切换按钮
-      document.querySelectorAll('#shapeSwitcher .shape-btn').forEach(function(b) {
-        b.addEventListener('click', function() { switchShape(b.dataset.shape); });
-      });
+      // 自动循环切换形状（每 1 秒）：heart → star → cap → chen → heart
+      const SHAPE_ORDER = ['heart', 'star', 'cap', 'chen'];
+      let shapeIndex = SHAPE_ORDER.indexOf(currentShape);
+      let shapeTimer = null;
+      function startAutoSwitch() {
+        stopAutoSwitch();
+        shapeTimer = setInterval(function() {
+          shapeIndex = (shapeIndex + 1) % SHAPE_ORDER.length;
+          switchShape(SHAPE_ORDER[shapeIndex]);
+        }, 1000);
+      }
+      function stopAutoSwitch() {
+        if (shapeTimer) { clearInterval(shapeTimer); shapeTimer = null; }
+      }
 
       // resize debounce
       let resizeTimer = null;
@@ -1142,13 +1103,15 @@
         resizeTimer = setTimeout(resize, 200);
       });
 
-      // 标签页隐藏时暂停 rAF 省电
+      // 标签页隐藏时暂停 rAF 与形状自动切换 省电
       document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
           if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+          stopAutoSwitch();
         } else if (!reduceMotion && !rafId) {
           lastTs = performance.now();
           rafId = requestAnimationFrame(loop);
+          startAutoSwitch();
         }
       });
 
@@ -1161,6 +1124,7 @@
         } else {
           lastTs = performance.now();
           rafId = requestAnimationFrame(loop);
+          startAutoSwitch();
         }
       }
       if (document.fonts && document.fonts.ready) {
