@@ -10,9 +10,9 @@
 <meta name="theme-color" content="#030712">
 
 <!-- SEO / 社交分享预览 -->
-<meta name="description" content="陈成睿 · 常州工学院化学工程与工艺专业准大一学生个人简历。俄语高考110分（前15%）、达摩院AI训练师（初/高级），热爱化工与AI交叉领域。">
+<meta name="description" content="陈成睿 · 常州工学院化学工程与工艺专业准大一学生个人简历。俄语高考110分（前15%）、达摩院 AI 训练师（初/高级），热爱化工与 AI 交叉领域。">
 <meta property="og:title" content="陈成睿 · 个人简历">
-<meta property="og:description" content="化学工程与工艺专业准大一学生，俄语高考110分（前15%），达摩院AI训练师（初/高级）。">
+<meta property="og:description" content="化学工程与工艺专业准大一学生，俄语高考110分（前15%），达摩院 AI 训练师（初/高级）。">
 <meta property="og:type" content="website">
 <meta property="og:image" content="logo.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -97,22 +97,64 @@
   #meshBg {
     position: fixed; inset: -20%; z-index: 0; pointer-events: none;
     background:
-      radial-gradient(40% 40% at 18% 28%, rgba(79,70,229,0.10), transparent 60%),
-      radial-gradient(36% 36% at 82% 72%, rgba(6,182,212,0.08), transparent 60%),
-      radial-gradient(30% 30% at 60% 18%, rgba(129,140,248,0.07), transparent 60%);
-    animation: meshDrift 18s ease-in-out infinite alternate;
+      radial-gradient(42% 42% at 16% 26%, rgba(79,70,229,0.22), transparent 62%),
+      radial-gradient(38% 38% at 84% 70%, rgba(6,182,212,0.18), transparent 62%),
+      radial-gradient(34% 34% at 62% 16%, rgba(129,140,248,0.16), transparent 62%),
+      radial-gradient(30% 30% at 30% 84%, rgba(217,70,239,0.12), transparent 62%);
+    filter: blur(10px);
+    animation: meshDrift 22s ease-in-out infinite alternate;
   }
   @keyframes meshDrift {
     0%   { transform: translate(0,0) scale(1); }
-    100% { transform: translate(2%, -3%) scale(1.08); }
+    100% { transform: translate(4%, -5%) scale(1.14); }
   }
   @media (prefers-reduced-motion: reduce) {
     .avatar-ring::before, #meshBg { animation: none !important; }
   }
 
+  /* ===== 科技网格点阵（中心亮、边缘淡出） ===== */
+  #bgGrid {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(148,163,184,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148,163,184,0.06) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(ellipse at 50% 28%, #000 35%, transparent 80%);
+            mask-image: radial-gradient(ellipse at 50% 28%, #000 35%, transparent 80%);
+  }
+
+  /* ===== 边缘暗角（空间纵深） ===== */
+  #bgVignette {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background: radial-gradient(125% 125% at 50% 38%, transparent 52%, rgba(0,0,0,0.55) 100%);
+  }
+
+  /* ===== 颗粒噪声（去除纯色廉价感） ===== */
+  #bgGrain {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    opacity: 0.05; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+
+  /* ===== 首屏聚光 ===== */
+  #hero::after {
+    content: ''; position: absolute; top: -8%; left: 50%; transform: translateX(-50%);
+    width: 72vw; height: 52vh; pointer-events: none; z-index: -1;
+    background: radial-gradient(50% 60% at 50% 50%, rgba(6,182,212,0.12), transparent 70%);
+    filter: blur(36px);
+  }
+
+  /* ===== 区块交替微着色（冷暖节奏） ===== */
+  #main > section { position: relative; }
+  #main > section:nth-of-type(even)::before {
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(72% 60% at 50% 0%, rgba(99,102,241,0.05), transparent 75%);
+  }
+
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: #030712;
+    background: linear-gradient(180deg, #0b1022 0%, #060912 48%, #030712 100%);
     color: #f1f5f9;
     line-height: 1.5;
     min-height: 100vh;
@@ -524,7 +566,8 @@
 
   /* ===== 打印样式 ===== */
   @media print {
-    .navbar-blur, .glow-bg, .toast, .btn-glow, .back-to-top, .btn, .tabs-custom, .lightbox, #bgCanvas {
+    .navbar-blur, .glow-bg, .toast, .btn-glow, .back-to-top, .btn, .tabs-custom, .lightbox, #bgCanvas,
+    #meshBg, #bgGrid, #bgVignette, #bgGrain, #cursorGlow {
       display: none !important;
     }
     body {
@@ -597,7 +640,7 @@
   <div class="splash-bottom">
     <div class="splash-sub">化学工程与工艺 · 常州工学院</div>
     <div class="splash-bar"><span></span></div>
-    <button id="enterResumeBtn" class="splash-enter-btn" type="button">快来了解我吧</button>
+    <button id="enterResumeBtn" class="splash-enter-btn" type="button">进入简历</button>
   </div>
 </div>
 
@@ -605,8 +648,15 @@
 <div class="glow-bg"></div>
 <div id="meshBg" aria-hidden="true"></div>
 
+<!-- ===== 科技网格点阵 ===== -->
+<div id="bgGrid" aria-hidden="true"></div>
+
 <!-- ===== 动态 Canvas 粒子背景（形状聚合，z-1 浮于光斑之上、内容之下） ===== -->
 <canvas id="bgCanvas" class="fixed inset-0 pointer-events-none" style="z-index:1;" aria-hidden="true"></canvas>
+
+<!-- ===== 背景增强层：暗角 + 颗粒 ===== -->
+<div id="bgVignette" aria-hidden="true"></div>
+<div id="bgGrain" aria-hidden="true"></div>
 
 <!-- ===== 鼠标光标背景高亮 ===== -->
 <div id="cursorGlow" aria-hidden="true"></div>
@@ -623,6 +673,7 @@
       <a href="#projects" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">生活瞬间</a>
       <a href="#skills" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">技能</a>
       <a href="#education" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">教育</a>
+      <a href="#services" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">我能做</a>
       <a href="#contact" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">联系方式</a>
     </div>
     <div class="flex gap-2 flex-shrink-0 items-center">
@@ -703,7 +754,6 @@
         <h2 class="section-title text-xl md:text-2xl font-extrabold text-white">生活瞬间</h2>
       </div>
       <p class="text-sm text-slate-400 mb-4">记录生活中的美好瞬间</p>
-      <div id="projTabs" class="tabs-custom flex gap-1 bg-slate-900/50 border border-white/10 rounded-xl p-1 mb-5 overflow-x-auto scrollbar-none" role="tablist" aria-label="生活瞬间分类"></div>
       <div id="projPanels"></div>
     </div>
   </section>
@@ -730,6 +780,18 @@
       <p class="text-sm text-slate-400 mb-6">学术背景与专业资质</p>
       <div id="eduCard" class="glass-card p-5 md:p-6 mb-5"></div>
       <div id="certList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+  </section>
+
+  <!-- 我能为您做哪些 -->
+  <section id="services" class="py-10 md:py-14">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="flex items-center gap-3 mb-5">
+        <i data-lucide="sparkles" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400"></i>
+        <h2 class="section-title text-xl md:text-2xl font-extrabold text-white">我能为您做哪些</h2>
+      </div>
+      <p class="text-sm text-slate-400 mb-6">结合个人履历，用 AI 把您的想法变成可交付的作品</p>
+      <div id="servicesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5"></div>
     </div>
   </section>
 
@@ -784,16 +846,16 @@
       personality: ["乐观", "腼腆"]
     },
     hero: {
-      summary: "常州工学院化学工程与工艺专业准大一学生（2026年入学），高考总分535分，俄语单科110分。已获达摩院初级与高级人工智能训练师认证，对化工与AI交叉领域充满热情，乐观踏实，乐于团队协作。",
+      summary: "常州工学院化学工程与工艺专业准大一学生（2026年入学），高考总分535分，俄语单科110分。已获达摩院初级与高级人工智能训练师认证，对化工与 AI 交叉领域充满热情，乐观踏实，乐于团队协作。",
       badges: [
         "化学工程与工艺", "俄语高考110", "高考535分",
-        "达摩院AI训练师（初/高级）", "AutoCAD", "Aspen Plus", "Origin"
+        "达摩院 AI 训练师（初/高级）", "AutoCAD", "Aspen Plus", "Origin"
       ]
     },
     highlights: [
       { metric: "535", label: "高考总分", icon: "target" },
       { metric: "110", label: "俄语高考", icon: "globe" },
-      { metric: "2项", label: "达摩院AI训练师认证（初+高级）", icon: "bot" },
+      { metric: "certCount", label: "专业认证证书（AI 训练师 · Prompt 工程师）", icon: "bot" },
       { metric: "前15%", label: "高考成绩排名", icon: "bar-chart-3" }
     ],
     experiences: [
@@ -873,7 +935,16 @@
     },
     certificates: [
       { name: "达摩院初级人工智能训练师", issuer: "阿里巴巴达摩院", year: "2026", level: "初级", img: "zs1.jpg" },
-      { name: "达摩院高级人工智能训练师", issuer: "阿里巴巴达摩院", year: "2026", level: "高级", img: "zs2.jpg" }
+      { name: "达摩院高级人工智能训练师", issuer: "阿里巴巴达摩院", year: "2026", level: "高级", img: "zs2.jpg" },
+      { name: "Prompt 工程师认证", issuer: "AI 应用开发方向", year: "2026", level: "认证", img: "zs3.jpg" }
+    ],
+    services: [
+      { icon: "layout", title: "用 AI 开发网页 / 落地页", desc: "从个人简历、作品集到活动落地页，我能用 AI 快速搭出好看、能用的网页（HTML/CSS/JS），并把您的照片、证书自动排版与集中展示。" },
+      { icon: "presentation", title: "用 AI 制作 PPT 与汇报", desc: "帮您把零散想法整理成结构清晰的演示文稿，自动配色、排版与图示，适合课堂展示、社团答辩与项目路演。" },
+      { icon: "bar-chart-3", title: "数据可视化与图表报告", desc: "把成绩、实验或调研数据做成直观的图表与可交互看板，让结论一眼可见，化工与俄语学习数据同样适用。" },
+      { icon: "file-text", title: "文案与双语内容创作", desc: "借助 AI 撰写中文文案、俄语（高考110分）学习资料与双语内容，也能润色、翻译并生成自我介绍与简历。" },
+      { icon: "bot", title: "AI 应用与自动化小工具", desc: "基于达摩院 AI 训练师（初/高级）所学，搭建提示词工作流、表单与轻量自动化脚本，将重复性工作交由程序自动处理。" },
+      { icon: "image", title: "证书 / 作品集展示页", desc: "为您的证书、摄影与生活瞬间定制专属展示页，支持灯箱放大、打印导出，随时分享给老师、同学或招聘方。" }
     ],
     galleryImages: [
       "worek_1.jpg"
@@ -949,7 +1020,8 @@
     resume.highlights.forEach(h => {
       const card = document.createElement('div');
       card.className = 'metric-card glass-card p-4 md:p-6 text-center';
-      const mm = (String(h.metric).match(/(\D*)(\d+)([\D]*)/) || ['', '', h.metric, '']);
+      const metricText = h.metric === 'certCount' ? (resume.certificates.length + '项') : h.metric;
+      const mm = (String(metricText).match(/(\D*)(\d+)([\D]*)/) || ['', '', metricText, '']);
       const prefix = mm[1] || '';
       const num = parseInt(mm[2], 10) || 0;
       const suffix = mm[3] || '';
@@ -1019,21 +1091,8 @@
       expPanels.appendChild(panel);
     });
 
-    // 生活瞬间 Tabs
-    const projTabs = document.getElementById('projTabs');
+    // 生活瞬间（单栏直接展示，无需 tab）
     const projPanels = document.getElementById('projPanels');
-    const tabBtn = document.createElement('button');
-    tabBtn.className = 'tab-btn-custom py-2 px-3 md:px-4 rounded-lg text-xs md:text-sm font-medium text-slate-400';
-    tabBtn.setAttribute('role', 'tab');
-    tabBtn.setAttribute('aria-selected', 'true');
-    tabBtn.textContent = '生活瞬间';
-    tabBtn.addEventListener('click', () => activateTab(projTabs, projPanels, 0));
-    projTabs.appendChild(tabBtn);
-
-    const panel = document.createElement('div');
-    panel.className = 'tab-panel-custom active';
-    panel.setAttribute('role', 'tabpanel');
-    // 生活瞬间图片渲染（单图居中、多图网格）
     function makeGalleryItem(imgSrc, index) {
       const item = document.createElement('div');
       item.className = 'glass-card overflow-hidden cursor-pointer aspect-square rounded-xl transition-all hover:scale-[1.02] hover:border-cyan-400/40';
@@ -1061,14 +1120,13 @@
     if (imgs.length === 1) {
       const item = makeGalleryItem(imgs[0], 0);
       item.className = 'glass-card overflow-hidden cursor-pointer mx-auto w-full max-w-sm rounded-xl transition-all hover:border-cyan-400/40';
-      panel.appendChild(item);
+      projPanels.appendChild(item);
     } else {
       const grid = document.createElement('div');
       grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4';
       imgs.forEach((imgSrc, index) => grid.appendChild(makeGalleryItem(imgSrc, index)));
-      panel.appendChild(grid);
+      projPanels.appendChild(grid);
     }
-    projPanels.appendChild(panel);
 
     // 技能矩阵
     const skillsGrid = document.getElementById('skillsGrid');
@@ -1144,6 +1202,21 @@
       certList.appendChild(div);
     });
 
+    // 我能为您做哪些
+    const servicesGrid = document.getElementById('servicesGrid');
+    resume.services.forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'glass-card p-5 md:p-6';
+      card.innerHTML = `
+        <div class="flex items-center gap-2 mb-3">
+          <i data-lucide="${s.icon}" class="w-5 h-5 text-cyan-400"></i>
+          <h3 class="text-base md:text-lg font-bold text-white">${s.title}</h3>
+        </div>
+        <p class="text-sm text-slate-300 leading-relaxed">${s.desc}</p>
+      `;
+      servicesGrid.appendChild(card);
+    });
+
     // 联系方式（数据驱动：数据源 resume.personal）
     const contactGrid = document.getElementById('contactGrid');
     const contacts = [
@@ -1191,6 +1264,7 @@
       document.body.style.overflow = 'hidden';
     }
     function closeLightbox() {
+      if (lightbox.classList.contains('hidden')) return; // 已关闭则不重复执行
       lightbox.classList.add('opacity-0');
       setTimeout(() => {
         lightbox.classList.add('hidden');
@@ -1293,6 +1367,62 @@
 
     // 重新初始化图标（包含新按钮）
     lucide.createIcons();
+
+    // ===== 共享：流星生成与绘制（开屏与背景粒子背景复用，消除重复逻辑） =====
+    const METEOR_PALETTE_SHARED = [['#22d3ee','34,211,238'], ['#a5b4fc','165,180,252'], ['#818cf8','129,140,248']];
+    function spawnMeteor(mt, vw, vh, spMax) {
+      const mp = METEOR_PALETTE_SHARED[Math.floor(Math.random() * METEOR_PALETTE_SHARED.length)];
+      const sp = 2 + Math.random() * (spMax || 1.6);       // 慢速：流星雨般连绵
+      mt.x = Math.random() * vw;
+      mt.y = -20 - Math.random() * (vh * 0.5);              // 从屏幕上方进入
+      mt.vx = (Math.random() - 0.5) * 0.4;                 // 更垂直，仅极轻微横向偏移
+      mt.vy = sp;                                           // 固定向下
+      mt.len = 80 + Math.random() * 90;                     // 拖尾长度
+      mt.maxLife = Math.ceil((vh + 260) / sp) + Math.floor(Math.random() * 30); // 足够划过整屏
+      mt.life = 0;
+      mt.hex = mp[0]; mt.rgb = mp[1];
+    }
+    function drawMeteors(ctx, meteors, vw, vh, lineW, headR, peak, spMax) {
+      for (let i = 0; i < meteors.length; i++) {
+        const mt = meteors[i];
+        mt.x += mt.vx; mt.y += mt.vy; mt.life++;
+        if (mt.life > mt.maxLife) { spawnMeteor(mt, vw, vh, spMax); continue; }
+        const t = mt.life / mt.maxLife;
+        const a = Math.sin(Math.PI * t) * peak;
+        const sp = Math.hypot(mt.vx, mt.vy) || 1;
+        const tailX = mt.x - (mt.vx / sp) * mt.len;
+        const tailY = mt.y - (mt.vy / sp) * mt.len;
+        const grad = ctx.createLinearGradient(tailX, tailY, mt.x, mt.y);
+        grad.addColorStop(0, 'rgba(' + mt.rgb + ',0)');
+        grad.addColorStop(1, 'rgba(' + mt.rgb + ',' + a + ')');
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = lineW;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(mt.x, mt.y);
+        ctx.stroke();
+        ctx.globalAlpha = a;
+        ctx.fillStyle = mt.hex;
+        ctx.shadowBlur = 8; ctx.shadowColor = mt.hex;
+        ctx.beginPath();
+        ctx.arc(mt.x, mt.y, headR, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+    }
+
+    // 共享指针状态（bgCanvas 连线 + 光标高亮复用，减少全局 mousemove 监听）
+    const pointer = { x: window.innerWidth / 2, y: window.innerHeight / 2, active: false };
+    let cursorGlowWake = null;
+    // 背景粒子启动控制：延后到进入简历后启动（hideSplash），避免开屏期间多动画并发
+    let bgStartFn = null;
+    let bgStarted = false;
+    function startBgCanvas() {
+      if (bgStarted || !bgStartFn) return;
+      bgStarted = true;
+      bgStartFn();
+    }
 
     // ===== 动态 Canvas 粒子背景 + 形状切换 =====
     (function initBgCanvas() {
@@ -1443,32 +1573,23 @@
       let lastTs = 0;
       let vw = 0, vh = 0;
       let particleColor = SHAPES.heart.particle;
+      let particleRgb = hexToRgb(particleColor);
       const drawConnections = !isMobile;
 
-      // 主页面流星雨：自上而下、慢速、持续（与开屏同款）
-      const bgMeteorPalette = [['#22d3ee', '34,211,238'], ['#a5b4fc', '165,180,252'], ['#818cf8', '129,140,248']];
+      // 主页面流星雨：自上而下、慢速、持续（复用共享 spawnMeteor / drawMeteors）
       let bgMeteors = [];
-      function spawnBgMeteor(mt) {
-        const mp = bgMeteorPalette[Math.floor(Math.random() * bgMeteorPalette.length)];
-        const sp = 2 + Math.random() * 1.6;                 // 慢速
-        mt.x = Math.random() * vw;
-        mt.y = -20 - Math.random() * (vh * 0.5);            // 从屏幕上方进入
-        mt.vx = (Math.random() - 0.5) * 0.4;                // 更垂直
-        mt.vy = sp;                                         // 固定向下
-        mt.len = 80 + Math.random() * 90;
-        mt.maxLife = Math.ceil((vh + 260) / sp) + Math.floor(Math.random() * 30);
-        mt.life = 0;
-        mt.hex = mp[0]; mt.rgb = mp[1];
-      }
 
-      // 鼠标交互状态（用于粒子连线 + 背景高亮）
-      const mouse = { x: -9999, y: -9999, active: false };
+      // 鼠标交互状态（用于粒子连线 + 背景高亮；坐标同步到共享 pointer 供光标高亮复用）
+      const mouse = { x: -9999, y: -9999, active: false, dirty: false };
+      let mouseLinks = []; // 预计算的连线（仅在鼠标移动时重算）
       if (!isMobile) {
         window.addEventListener('mousemove', function(e) {
-          mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true;
+          mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; mouse.dirty = true;
+          pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true;
+          if (cursorGlowWake) cursorGlowWake();
         }, { passive: true });
         window.addEventListener('mouseout', function(e) {
-          if (!e.relatedTarget) mouse.active = false;
+          if (!e.relatedTarget) { mouse.active = false; mouse.dirty = false; mouseLinks = []; pointer.active = false; }
         });
       }
 
@@ -1481,7 +1602,7 @@
         canvas.style.width = vw + 'px';
         canvas.style.height = vh + 'px';
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        const N = isMobile ? 60 : Math.min(140, Math.floor(vw * vh / 14000));
+        const N = isMobile ? 50 : Math.min(120, Math.floor(vw * vh / 16000));
         while (particles.length < N) particles.push(new Particle(vw / 2, vh / 2));
         if (particles.length > N) particles.length = N;
         const targets = sampleTargets(currentShape, N, vw, vh);
@@ -1491,7 +1612,7 @@
         bgMeteors = [];
         for (let i = 0; i < MN; i++) {
           const mt = {};
-          spawnBgMeteor(mt);
+          spawnMeteor(mt, vw, vh);
           mt.life = Math.random() * mt.maxLife;             // 错峰出现
           bgMeteors.push(mt);
         }
@@ -1501,80 +1622,98 @@
         return parseInt(hex.slice(1, 3), 16) + ',' + parseInt(hex.slice(3, 5), 16) + ',' + parseInt(hex.slice(5, 7), 16);
       }
 
-      function loop(ts) {
-        lastTs = ts;
-        ctx.clearRect(0, 0, vw, vh);
-        ctx.shadowBlur = 0;
-        const rgb = hexToRgb(particleColor);
-        if (drawConnections) {
-          for (let i = 0; i < particles.length; i++) {
-            const a = particles[i];
-            for (let j = i + 1; j < particles.length; j++) {
-              const b = particles[j];
-              const dx = a.x - b.x, dy = a.y - b.y;
-              const d2 = dx * dx + dy * dy;
-              if (d2 < 12100) { // 110^2
-                const alpha = 0.12 * (1 - d2 / 12100);
-                ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
-                ctx.lineWidth = 0.6;
-                ctx.beginPath();
-                ctx.moveTo(a.x, a.y);
-                ctx.lineTo(b.x, b.y);
-                ctx.stroke();
+      // 鼠标连线：限制半径与同时连接数；几何仅在鼠标移动时重算，每帧只做廉价绘制
+      const CONNECT_RADIUS2 = 130 * 130;
+      const MAX_CONNECTIONS = 14;
+      function recomputeMouseLinks() {
+        mouseLinks = [];
+        if (!mouse.active) return;
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          const dx = p.x - mouse.x, dy = p.y - mouse.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < CONNECT_RADIUS2) {
+            mouseLinks.push({ i: i, alpha: 0.34 * (1 - d2 / CONNECT_RADIUS2) });
+            if (mouseLinks.length >= MAX_CONNECTIONS) break;
+          }
+        }
+      }
+
+      // 粒子两两连线：用空间网格只查邻域，避免每帧 O(n²) 全量遍历；每个粒子连线数设上限
+      const CONN_R2 = 110 * 110;
+      const CONN_CAP = 10;
+      function drawParticleConnections() {
+        const cell = 110;
+        const grid = new Map();
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          const key = Math.floor(p.x / cell) + '_' + Math.floor(p.y / cell);
+          let b = grid.get(key);
+          if (!b) { b = []; grid.set(key, b); }
+          b.push(i);
+        }
+        ctx.lineWidth = 0.6;
+        for (let i = 0; i < particles.length; i++) {
+          const a = particles[i];
+          const cx = Math.floor(a.x / cell), cy = Math.floor(a.y / cell);
+          let drawn = 0;
+          for (let ox = -1; ox <= 1 && drawn < CONN_CAP; ox++) {
+            for (let oy = -1; oy <= 1 && drawn < CONN_CAP; oy++) {
+              const b = grid.get((cx + ox) + '_' + (cy + oy));
+              if (!b) continue;
+              for (let k = 0; k < b.length; k++) {
+                const j = b[k];
+                if (j <= i) continue;
+                const o = particles[j];
+                const dx = a.x - o.x, dy = a.y - o.y;
+                const d2 = dx * dx + dy * dy;
+                if (d2 < CONN_R2) {
+                  const alpha = 0.12 * (1 - d2 / CONN_R2);
+                  ctx.strokeStyle = 'rgba(' + particleRgb + ',' + alpha + ')';
+                  ctx.beginPath();
+                  ctx.moveTo(a.x, a.y);
+                  ctx.lineTo(o.x, o.y);
+                  ctx.stroke();
+                  if (++drawn >= CONN_CAP) break;
+                }
               }
+              if (drawn >= CONN_CAP) break;
             }
           }
         }
+      }
+
+      const FRAME_MS = 33; // ~30fps：降低低端设备 CPU/GPU 负担
+      function loop(ts) {
+        rafId = requestAnimationFrame(loop);
+        if (ts - lastTs < FRAME_MS) return; // 跳帧，节流到约 30fps
+        lastTs = ts;
+        ctx.clearRect(0, 0, vw, vh);
+        ctx.shadowBlur = 0;
+        const rgb = particleRgb; // 颜色仅在切换形状时变化，已缓存（见 switchShape）
+        if (drawConnections) drawParticleConnections();
         ctx.globalCompositeOperation = 'lighter';
         for (let i = 0; i < particles.length; i++) {
           particles[i].update();
           particles[i].draw(ctx, particleColor);
         }
         ctx.globalCompositeOperation = 'source-over';
-        // 鼠标交互：附近粒子与光标连线（高级感）
+        // 鼠标连线：几何已缓存于 mouseLinks，按帧廉价重绘
         if (mouse.active && drawConnections) {
-          for (let i = 0; i < particles.length; i++) {
-            const a = particles[i];
-            const dx = a.x - mouse.x, dy = a.y - mouse.y;
-            const d2 = dx * dx + dy * dy;
-            if (d2 < 16900) { // ~130px
-              const alpha = 0.3 * (1 - d2 / 16900);
-              ctx.strokeStyle = 'rgba(' + rgb + ',' + alpha + ')';
-              ctx.lineWidth = 0.8;
-              ctx.beginPath();
-              ctx.moveTo(a.x, a.y);
-              ctx.lineTo(mouse.x, mouse.y);
-              ctx.stroke();
-            }
+          if (mouse.dirty) { recomputeMouseLinks(); mouse.dirty = false; }
+          const stroke = 'rgba(' + rgb + ',';
+          for (let k = 0; k < mouseLinks.length; k++) {
+            const a = particles[mouseLinks[k].i];
+            ctx.strokeStyle = stroke + mouseLinks[k].alpha + ')';
+            ctx.lineWidth = 0.9;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.stroke();
           }
         }
-        // 主页面流星雨：淡入 → 下落 → 淡出，循环重生
-        for (let i = 0; i < bgMeteors.length; i++) {
-          const mt = bgMeteors[i];
-          mt.x += mt.vx; mt.y += mt.vy; mt.life++;
-          if (mt.life > mt.maxLife) { spawnBgMeteor(mt); continue; }
-          const t = mt.life / mt.maxLife;
-          const a = Math.sin(Math.PI * t) * 0.85;
-          const sp = Math.hypot(mt.vx, mt.vy) || 1;
-          const tailX = mt.x - (mt.vx / sp) * mt.len;
-          const tailY = mt.y - (mt.vy / sp) * mt.len;
-          const grad = ctx.createLinearGradient(tailX, tailY, mt.x, mt.y);
-          grad.addColorStop(0, 'rgba(' + mt.rgb + ',0)');
-          grad.addColorStop(1, 'rgba(' + mt.rgb + ',' + a + ')');
-          ctx.strokeStyle = grad;
-          ctx.lineWidth = 1.6;
-          ctx.lineCap = 'round';
-          ctx.beginPath();
-          ctx.moveTo(tailX, tailY);
-          ctx.lineTo(mt.x, mt.y);
-          ctx.stroke();
-          ctx.globalAlpha = a;
-          ctx.fillStyle = mt.hex;
-          ctx.shadowBlur = 8; ctx.shadowColor = mt.hex;
-          ctx.beginPath();
-          ctx.arc(mt.x, mt.y, 1.7, 0, Math.PI * 2);
-          ctx.fill();
-        }
+        // 主页面流星雨：淡入 → 下落 → 淡出，循环重生（复用共享 drawMeteors）
+        drawMeteors(ctx, bgMeteors, vw, vh, 1.6, 1.7, 0.85, 1.6);
         ctx.globalAlpha = 1; ctx.shadowBlur = 0;
         rafId = requestAnimationFrame(loop);
       }
@@ -1584,6 +1723,7 @@
         currentShape = key;
         const cfg = SHAPES[key];
         particleColor = cfg.particle;
+        particleRgb = hexToRgb(particleColor);
         // 同步切 CSS 变量 → .glow-bg 光斑色平滑过渡（1.2s）
         document.documentElement.style.setProperty('--accent-glow-1', cfg.glow1);
         document.documentElement.style.setProperty('--accent-glow-2', cfg.glow2);
@@ -1613,15 +1753,14 @@
         resizeTimer = setTimeout(resize, 200);
       });
 
-      // 标签页隐藏时暂停 rAF 与形状自动切换 省电
+      // 标签页隐藏时暂停 rAF 与形状自动切换 省电；未启动时延后到进入简历再启动
       document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
           if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
           stopAutoSwitch();
-        } else if (!reduceMotion && !rafId) {
-          lastTs = performance.now();
-          rafId = requestAnimationFrame(loop);
-          startAutoSwitch();
+        } else if (!reduceMotion) {
+          if (!bgStarted) { startBgCanvas(); }
+          else if (!rafId) { lastTs = performance.now(); rafId = requestAnimationFrame(loop); startAutoSwitch(); }
         }
       });
 
@@ -1637,11 +1776,9 @@
           startAutoSwitch();
         }
       }
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(start);
-      } else {
-        start();
-      }
+      // 延后启动：进入简历（hideSplash）后再开始粒子背景，避免开屏期间多动画并发；
+      // hideSplash 自带 12s 兜底，故无需额外超时（满足启动兜底要求）
+      bgStartFn = start;
     })();
 
     // 开屏动画：内容就绪后优雅淡出（保留 DOM，便于重播）
@@ -1669,25 +1806,12 @@
           c: Math.random() > 0.5 ? '#22d3ee' : '#818cf8'
         });
       }
-      // 流星粒子：带拖尾、随机方向飞掠、淡入淡出循环
-      const meteorPalette = [['#22d3ee', '34,211,238'], ['#a5b4fc', '165,180,252'], ['#818cf8', '129,140,248']];
+      // 流星粒子：带拖尾、随机方向飞掠、淡入淡出循环（复用共享 spawnMeteor / drawMeteors）
       const meteors = [];
-      function spawnMeteor(mt) {
-        const mp = meteorPalette[Math.floor(Math.random() * meteorPalette.length)];
-        const sp = 2 + Math.random() * 1.8;                 // 慢速：流星雨般连绵
-        mt.x = Math.random() * w;
-        mt.y = -20 - Math.random() * (h * 0.5);             // 从屏幕上方进入
-        mt.vx = (Math.random() - 0.5) * 0.4;                // 更垂直，仅极轻微横向偏移
-        mt.vy = sp;                                         // 固定向下
-        mt.len = 80 + Math.random() * 90;                   // 拖尾长度
-        mt.maxLife = Math.ceil((h + 260) / sp) + Math.floor(Math.random() * 30); // 足够划过整屏
-        mt.life = 0;
-        mt.hex = mp[0]; mt.rgb = mp[1];
-      }
       const M = Math.max(6, Math.floor(N / 12));            // 流星数量随屏幕缩放
       for (let i = 0; i < M; i++) {
         const mt = {};
-        spawnMeteor(mt);
+        spawnMeteor(mt, w, h, 1.8);
         mt.life = Math.random() * mt.maxLife;               // 错峰出现，避免同时划过
         meteors.push(mt);
       }
@@ -1722,33 +1846,8 @@
         }
         ctx.globalAlpha = 1;
         ctx.globalCompositeOperation = 'source-over';
-        // 流星：淡入 → 飞掠 → 淡出，循环重生
-        for (const mt of meteors) {
-          mt.x += mt.vx; mt.y += mt.vy; mt.life++;
-          if (mt.life > mt.maxLife) { spawnMeteor(mt); continue; }
-          const t = mt.life / mt.maxLife;
-          const a = Math.sin(Math.PI * t) * 0.9;            // 两端淡、中间亮
-          const sp = Math.hypot(mt.vx, mt.vy) || 1;
-          const tailX = mt.x - (mt.vx / sp) * mt.len;
-          const tailY = mt.y - (mt.vy / sp) * mt.len;
-          const grad = ctx.createLinearGradient(tailX, tailY, mt.x, mt.y);
-          grad.addColorStop(0, 'rgba(' + mt.rgb + ',0)');
-          grad.addColorStop(1, 'rgba(' + mt.rgb + ',' + a + ')');
-          ctx.strokeStyle = grad;
-          ctx.lineWidth = 2;
-          ctx.lineCap = 'round';
-          ctx.beginPath();
-          ctx.moveTo(tailX, tailY);
-          ctx.lineTo(mt.x, mt.y);
-          ctx.stroke();
-          // 明亮头部
-          ctx.globalAlpha = a;
-          ctx.fillStyle = mt.hex;
-          ctx.shadowBlur = 8; ctx.shadowColor = mt.hex;
-          ctx.beginPath();
-          ctx.arc(mt.x, mt.y, 1.8, 0, Math.PI * 2);
-          ctx.fill();
-        }
+        // 流星：淡入 → 飞掠 → 淡出，循环重生（复用共享 drawMeteors）
+        drawMeteors(ctx, meteors, w, h, 2, 1.8, 0.9, 1.8);
         ctx.globalAlpha = 1; ctx.shadowBlur = 0;
         splashRaf = requestAnimationFrame(frame);
       }
@@ -1955,6 +2054,7 @@
     if (splashParticles) splashParticles.start(); // 首屏即开始粒子动画
     function hideSplash() {
       const splash = document.getElementById('splash');
+      startBgCanvas(); // 进入简历后启动背景粒子（自带 12s 兜底，满足启动兜底要求）
       if (!splash) return;
       splash.classList.add('is-hidden');
       if (splashParticles) splashParticles.stop();
@@ -1972,28 +2072,25 @@
     // 兜底：若用户一直未点击，12s 后自动进入（避免卡在开屏）
     setTimeout(hideSplash, 12000);
 
-    // 鼠标光标背景高亮（平滑跟随，触屏/减动效跳过）
+    // 鼠标光标背景高亮（平滑跟随，触屏/减动效跳过；坐标复用共享 pointer，避免重复 mousemove 监听）
     (function initCursorGlow() {
       const glow = document.getElementById('cursorGlow');
       if (!glow) return;
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reduce) return;
-      let raf = null, tx = window.innerWidth / 2, ty = window.innerHeight / 2, cx = tx, cy = ty;
+      let raf = null, cx = window.innerWidth / 2, cy = window.innerHeight / 2;
       function loop() {
-        cx += (tx - cx) * 0.18; cy += (ty - cy) * 0.18;
+        cx += (pointer.x - cx) * 0.18; cy += (pointer.y - cy) * 0.18;
         glow.style.setProperty('--mx', cx + 'px');
         glow.style.setProperty('--my', cy + 'px');
-        if (Math.abs(tx - cx) > 0.5 || Math.abs(ty - cy) > 0.5) {
+        if (pointer.active) glow.classList.add('active'); else glow.classList.remove('active');
+        if (pointer.active || Math.abs(pointer.x - cx) > 0.5 || Math.abs(pointer.y - cy) > 0.5) {
           raf = requestAnimationFrame(loop);
         } else { raf = null; }
       }
-      window.addEventListener('mousemove', (e) => {
-        tx = e.clientX; ty = e.clientY;
-        glow.classList.add('active');
-        if (!raf) raf = requestAnimationFrame(loop);
-      }, { passive: true });
-      document.addEventListener('mouseleave', () => glow.classList.remove('active'));
+      cursorGlowWake = function() { if (!raf) raf = requestAnimationFrame(loop); };
       window.addEventListener('touchstart', () => glow.classList.remove('active'), { passive: true });
+      cursorGlowWake(); // 首次启动；后续由 bgCanvas 的共享 mousemove 经 cursorGlowWake 唤醒
     })();
 
     // 滚动入场 + 技能条填充 + 数字滚动（统一由 IntersectionObserver 驱动）
