@@ -14,11 +14,25 @@
 <meta property="og:title" content="陈成睿 · 个人简历">
 <meta property="og:description" content="化学工程与工艺专业准大一学生，俄语高考110分（前15%），达摩院 AI 训练师（初/高级）。">
 <meta property="og:type" content="website">
-<meta property="og:image" content="logo.jpg">
+<meta property="og:image" content="https://sdjknfgw.github.io/resume/logo.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="陈成睿 · 个人简历">
 <meta name="twitter:description" content="化学工程与工艺专业准大一学生个人简历。">
-<meta name="twitter:image" content="logo.jpg">
+<meta name="twitter:image" content="https://sdjknfgw.github.io/resume/logo.jpg">
+
+<!-- 结构化数据（JSON-LD Person） -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "陈成睿",
+  "url": "https://sdjknfgw.github.io/resume/",
+  "image": "https://sdjknfgw.github.io/resume/logo.jpg",
+  "email": "mailto:26250102@czu.cn",
+  "affiliation": { "@type": "CollegeOrUniversity", "name": "常州工学院" },
+  "knowsLanguage": ["zh-CN", "ru"]
+}
+</script>
 
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
@@ -153,7 +167,6 @@
   }
 
   body {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
     background: linear-gradient(180deg, #0b1022 0%, #060912 48%, #030712 100%);
     color: #f1f5f9;
     line-height: 1.5;
@@ -181,6 +194,11 @@
     background: #030712;
     overflow: hidden;
     transition: opacity 0.65s ease, visibility 0.65s ease;
+    /* 兜底：若 JS 未能在 15s 内隐藏开屏（如脚本异常），CSS 自动淡出，避免永久遮挡内容 */
+    animation: splashAutoHide 0.6s linear 15s forwards;
+  }
+  @keyframes splashAutoHide {
+    to { opacity: 0; visibility: hidden; pointer-events: none; }
   }
   #splash.is-hidden {
     opacity: 0;
@@ -505,6 +523,12 @@
   .nav-link.active { color: #22d3ee; }
   .nav-link.active::after { width: 70%; }
 
+  /* 导航横向滚动时右侧边缘淡出，提示小屏可滑动（不改变滚动行为） */
+  .nav-scroll {
+    -webkit-mask-image: linear-gradient(90deg, #000 94%, transparent 100%);
+            mask-image: linear-gradient(90deg, #000 94%, transparent 100%);
+  }
+
   /* ===== 亮点卡片微发光 ===== */
   .metric-card {
     transition: all 0.3s ease;
@@ -582,6 +606,8 @@
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
     }
+    /* 打印时将所有灰色正文转为深灰，保证纸质版可读性（避免 slate-300/400/500 在白底上过浅） */
+    .text-slate-300, .text-slate-400, .text-slate-500 { color: #1f2937 !important; }
     .metric-number {
       -webkit-text-fill-color: #000 !important;
       background: none !important;
@@ -614,6 +640,10 @@
     transition: transform 0.2s ease;
   }
   .skip-link:focus { transform: translateY(0); outline: 2px solid #22d3ee; outline-offset: 2px; }
+
+  /* 跳转主内容后的焦点可见性：程序化聚焦（进入简历）不显示外框；键盘跳转（skip-link 回车）显示青色外框 */
+  #main:focus { outline: none; }
+  #main:focus-visible { outline: 2px solid #22d3ee; outline-offset: 2px; }
 </style>
 </head>
 <body>
@@ -666,7 +696,7 @@
 <nav class="navbar-blur fixed top-0 left-0 right-0 z-50" aria-label="主导航">
   <div class="max-w-5xl mx-auto px-4 h-14 md:h-16 flex items-center justify-between gap-2">
     <a href="#hero" class="text-lg md:text-xl font-extrabold text-white hover:text-cyan-400 transition-colors whitespace-nowrap">陈成睿</a>
-    <div class="flex gap-1 md:gap-2 overflow-x-auto scrollbar-none flex-1 justify-start px-2">
+    <div class="nav-scroll flex gap-1 md:gap-2 overflow-x-auto scrollbar-none flex-1 justify-start px-2">
       <a href="#about" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">关于我</a>
       <a href="#highlights" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">亮点</a>
       <a href="#experiences" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">经历</a>
@@ -677,13 +707,13 @@
       <a href="#contact" class="nav-link text-xs md:text-sm font-medium text-slate-400 whitespace-nowrap px-2 py-1.5">联系方式</a>
     </div>
     <div class="flex gap-2 flex-shrink-0 items-center">
-      <button id="printBtn" class="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full border border-white/10 text-slate-400 hover:text-cyan-400 hover:border-cyan-400/30 transition-all" aria-label="打印简历">🖨️</button>
+      <button id="printBtn" class="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full border border-white/10 text-slate-400 hover:text-cyan-400 hover:border-cyan-400/30 transition-all" aria-label="打印简历"><i data-lucide="printer" class="w-4 h-4 md:w-5 md:h-5"></i></button>
     </div>
   </div>
 </nav>
 
 <!-- ===== 主内容 ===== -->
-<main id="main" tabindex="-1" class="relative z-10 pt-14 md:pt-16 focus:outline-none">
+<main id="main" tabindex="-1" class="relative z-10 pt-14 md:pt-16">
 
   <!-- Hero 区 -->
   <section id="hero" class="py-10 md:py-16">
@@ -809,7 +839,7 @@
 </main>
 
 <!-- 页脚 -->
-<footer class="relative z-10 py-6 text-center text-slate-500 text-xs border-t border-white/5">
+<footer class="relative z-10 py-6 text-center text-slate-400 text-xs border-t border-white/5">
   <p>© 2026 陈成睿 · 最后更新 2026-08-26 · 常州工学院</p>
 </footer>
 
@@ -821,7 +851,7 @@
 </div>
 
 <!-- Toast -->
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <!-- 返回顶部 -->
 <button class="back-to-top fixed bottom-5 right-5 w-11 h-11 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl opacity-0 pointer-events-none transition-all z-50 flex items-center justify-center" id="backToTop" aria-label="返回顶部">
@@ -878,20 +908,6 @@
         points: [
           "暂无实习经历，期待在化工相关企业获得实践机会"
         ]
-      }
-    ],
-    projects: [
-      {
-        name: "个人作品集",
-        role: "摄影与生活记录",
-        period: "2025 - 至今",
-        stack: ["生活摄影", "旅游记录"],
-        result: "用镜头记录生活美好瞬间",
-        points: [
-          "包含旅游（上海、新疆、贵州等）与日常点滴",
-          "通过作品集展示个人审美与观察力"
-        ],
-        link: "#"
       }
     ],
     skills: [
@@ -951,9 +967,15 @@
     ]
   };
 
+  // 装饰性图标对屏幕阅读器隐藏（Lucide 生成 <svg> 后统一补 aria-hidden）
+  function markDecorativeIcons() {
+    document.querySelectorAll('svg.lucide').forEach(s => { if (!s.hasAttribute('aria-hidden')) s.setAttribute('aria-hidden', 'true'); });
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     // 初始化 Lucide 图标
     lucide.createIcons();
+    markDecorativeIcons();
 
     // Hero
     document.getElementById('heroSummary').textContent = resume.hero.summary;
@@ -1042,15 +1064,19 @@
     expTypes.forEach((type, idx) => {
       const btn = document.createElement('button');
       btn.className = 'tab-btn-custom py-2 px-3 md:px-4 rounded-lg text-xs md:text-sm font-medium text-slate-400';
+      btn.id = 'exp-tab-' + idx;
       btn.setAttribute('role', 'tab');
       btn.setAttribute('aria-selected', idx === 0 ? 'true' : 'false');
+      btn.setAttribute('aria-controls', 'exp-panel-' + idx);
       btn.textContent = type;
       btn.addEventListener('click', () => activateTab(expTabs, expPanels, idx));
       expTabs.appendChild(btn);
 
       const panel = document.createElement('div');
       panel.className = 'tab-panel-custom ' + (idx === 0 ? 'active' : 'hidden');
+      panel.id = 'exp-panel-' + idx;
       panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', 'exp-tab-' + idx);
       const filtered = resume.experiences.filter(e => e.type === type);
       filtered.forEach(exp => {
         const card = document.createElement('div');
@@ -1062,7 +1088,7 @@
               <i data-lucide="inbox" class="w-5 h-5 text-cyan-400 flex-shrink-0"></i>
               <div>
                 <div class="text-sm md:text-base font-semibold text-slate-200">${exp.type} · 暂无内容</div>
-                <div class="text-xs text-slate-500 mt-1">${(exp.points && exp.points[0]) ? exp.points[0] : '期待后续补充'}</div>
+                <div class="text-xs text-slate-400 mt-1">${(exp.points && exp.points[0]) ? exp.points[0] : '期待后续补充'}</div>
               </div>
             </div>
           `;
@@ -1074,7 +1100,7 @@
                 <span class="text-base md:text-lg font-bold text-white">${exp.company}</span>
               </div>
               <div class="text-sm text-indigo-300 font-medium">${exp.role}</div>
-              <div class="text-xs text-slate-500">${exp.period}</div>
+              <div class="text-xs text-slate-400">${exp.period}</div>
             </div>
             <ul class="space-y-1.5">
               ${exp.points.map(p => `
@@ -1139,7 +1165,7 @@
           <div class="mb-3 last:mb-0">
             <div class="flex justify-between items-center mb-1.5">
               <span class="text-xs md:text-sm font-medium text-slate-200">${item.name}</span>
-              <span class="text-xs text-slate-500">${item.level}%</span>
+              <span class="text-xs text-slate-400">${item.level}%</span>
             </div>
             <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
               <div class="skill-fill h-full rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400" data-level="${item.level}" style="width:0%; transition:width 0.9s cubic-bezier(0.22, 1, 0.36, 1);"></div>
@@ -1165,7 +1191,7 @@
         <div>
           <div class="text-lg md:text-xl font-extrabold text-white">${resume.education.school}</div>
           <div class="text-sm text-indigo-300 font-medium">${resume.education.major} · ${resume.education.degree}</div>
-          <div class="text-xs text-slate-500">${resume.education.period}</div>
+          <div class="text-xs text-slate-400">${resume.education.period}</div>
         </div>
       </div>
       <div class="flex flex-wrap gap-2 mt-3">
@@ -1187,7 +1213,7 @@
         <i data-lucide="award" class="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5"></i>
         <div class="flex-1">
           <div class="text-sm md:text-base font-bold text-white">${cert.name}</div>
-          <div class="text-xs text-slate-500">${detail}</div>
+          <div class="text-xs text-slate-400">${detail}</div>
           ${imgHtml}
         </div>
       `;
@@ -1254,14 +1280,17 @@
     const lightboxImg = document.getElementById('lightboxImg');
     const lightboxCaption = document.getElementById('lightboxCaption');
     const lightboxClose = document.getElementById('lightboxClose');
+    let lightboxLastTrigger = null; // 记录打开灯箱的触发元素，关闭后归还焦点
 
     function openLightbox(src, caption) {
+      lightboxLastTrigger = document.activeElement;
       lightboxImg.src = src;
       lightboxCaption.textContent = caption;
       lightbox.classList.remove('hidden');
       lightbox.classList.add('flex');
       setTimeout(() => { lightbox.classList.remove('opacity-0'); }, 10);
       document.body.style.overflow = 'hidden';
+      lightboxClose.focus(); // 焦点移入对话框，便于键盘/读屏用户操作
     }
     function closeLightbox() {
       if (lightbox.classList.contains('hidden')) return; // 已关闭则不重复执行
@@ -1273,7 +1302,13 @@
         lightboxCaption.textContent = '';
       }, 200);
       document.body.style.overflow = '';
+      if (lightboxLastTrigger && document.contains(lightboxLastTrigger)) lightboxLastTrigger.focus();
+      lightboxLastTrigger = null;
     }
+    // 焦点陷阱：对话框内仅关闭按钮可聚焦，Tab 循环锁定在其上
+    lightbox.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') { e.preventDefault(); lightboxClose.focus(); }
+    });
     lightboxClose.addEventListener('click', closeLightbox);
     lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
@@ -1367,6 +1402,7 @@
 
     // 重新初始化图标（包含新按钮）
     lucide.createIcons();
+    markDecorativeIcons();
 
     // ===== 共享：流星生成与绘制（开屏与背景粒子背景复用，消除重复逻辑） =====
     const METEOR_PALETTE_SHARED = [['#22d3ee','34,211,238'], ['#a5b4fc','165,180,252'], ['#818cf8','129,140,248']];
@@ -1430,7 +1466,7 @@
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const isMobile = window.matchMedia('(max-width: 767px)').matches;
+      let isMobile = window.matchMedia('(max-width: 767px)').matches; // let：resize 时跨断点重估
 
       // 形状配置：绘制函数 + 粒子色 + 光斑色（切换时同步驱动 .glow-bg 与粒子色）
       const SHAPES = {
@@ -1574,7 +1610,7 @@
       let vw = 0, vh = 0;
       let particleColor = SHAPES.heart.particle;
       let particleRgb = hexToRgb(particleColor);
-      const drawConnections = !isMobile;
+      let drawConnections = !isMobile; // resize 时随 isMobile 重估
 
       // 主页面流星雨：自上而下、慢速、持续（复用共享 spawnMeteor / drawMeteors）
       let bgMeteors = [];
@@ -1582,20 +1618,21 @@
       // 鼠标交互状态（用于粒子连线 + 背景高亮；坐标同步到共享 pointer 供光标高亮复用）
       const mouse = { x: -9999, y: -9999, active: false, dirty: false };
       let mouseLinks = []; // 预计算的连线（仅在鼠标移动时重算）
-      if (!isMobile) {
-        window.addEventListener('mousemove', function(e) {
-          mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; mouse.dirty = true;
-          pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true;
-          if (cursorGlowWake) cursorGlowWake();
-        }, { passive: true });
-        window.addEventListener('mouseout', function(e) {
-          if (!e.relatedTarget) { mouse.active = false; mouse.dirty = false; mouseLinks = []; pointer.active = false; }
-        });
-      }
+      // 监听不再按初始设备类型条件注册：移动端转桌面（旋转/跨 768px）后仍能获得鼠标交互
+      window.addEventListener('mousemove', function(e) {
+        mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; mouse.dirty = true;
+        pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true;
+        if (cursorGlowWake) cursorGlowWake();
+      }, { passive: true });
+      window.addEventListener('mouseout', function(e) {
+        if (!e.relatedTarget) { mouse.active = false; mouse.dirty = false; mouseLinks = []; pointer.active = false; }
+      });
 
       function resize() {
         vw = window.innerWidth;
         vh = window.innerHeight;
+        isMobile = window.matchMedia('(max-width: 767px)').matches; // 跨断点重估（旋转屏幕/调整窗口）
+        drawConnections = !isMobile;
         const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
         canvas.width = vw * dpr;
         canvas.height = vh * dpr;
@@ -1685,7 +1722,7 @@
 
       const FRAME_MS = 33; // ~30fps：降低低端设备 CPU/GPU 负担
       function loop(ts) {
-        rafId = requestAnimationFrame(loop);
+        rafId = requestAnimationFrame(loop); // 唯一调度点：无论是否节流跳帧都续订下一帧，避免回调堆积
         if (ts - lastTs < FRAME_MS) return; // 跳帧，节流到约 30fps
         lastTs = ts;
         ctx.clearRect(0, 0, vw, vh);
@@ -1715,7 +1752,6 @@
         // 主页面流星雨：淡入 → 下落 → 淡出，循环重生（复用共享 drawMeteors）
         drawMeteors(ctx, bgMeteors, vw, vh, 1.6, 1.7, 0.85, 1.6);
         ctx.globalAlpha = 1; ctx.shadowBlur = 0;
-        rafId = requestAnimationFrame(loop);
       }
 
       function switchShape(key) {
@@ -1731,7 +1767,7 @@
         particles.forEach(function(p, i) { if (targets[i]) p.setTarget(targets[i].x, targets[i].y); });
       }
 
-      // 自动循环切换形状（每 1 秒）：heart → star → cap → chen → heart
+      // 自动循环切换形状（每 5 秒）：heart → star → cap → chen → heart
       const SHAPE_ORDER = ['heart', 'star', 'cap', 'chen'];
       let shapeIndex = SHAPE_ORDER.indexOf(currentShape);
       let shapeTimer = null;
@@ -2052,10 +2088,13 @@
 
     let splashParticles = initSplashParticles();
     if (splashParticles) splashParticles.start(); // 首屏即开始粒子动画
+    let splashFallbackTimer = null;
     function hideSplash() {
       const splash = document.getElementById('splash');
       startBgCanvas(); // 进入简历后启动背景粒子（自带 12s 兜底，满足启动兜底要求）
+      if (splashFallbackTimer) { clearTimeout(splashFallbackTimer); splashFallbackTimer = null; } // 已进入则取消兜底定时器
       if (!splash) return;
+      if (splash.classList.contains('is-hidden')) return; // 幂等守卫：已隐藏则直接返回，避免重复执行造成焦点劫持
       splash.classList.add('is-hidden');
       if (splashParticles) splashParticles.stop();
       if (splashNameFx) splashNameFx.stop();
@@ -2070,7 +2109,7 @@
       enterResumeBtn.focus({ preventScroll: true }); // 键盘用户可直接回车进入
     }
     // 兜底：若用户一直未点击，12s 后自动进入（避免卡在开屏）
-    setTimeout(hideSplash, 12000);
+    splashFallbackTimer = setTimeout(hideSplash, 12000);
 
     // 鼠标光标背景高亮（平滑跟随，触屏/减动效跳过；坐标复用共享 pointer，避免重复 mousemove 监听）
     (function initCursorGlow() {
