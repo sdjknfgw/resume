@@ -359,7 +359,13 @@
     stroke-dasharray: 1;      /* JS 接管前的初始隐藏态（防字形闪现） */
     stroke-dashoffset: 1;
   }
-  @keyframes sigDraw { to { stroke-dashoffset: 0; } }
+  /* Chrome 已知行为：mask 内静态 dash 值被忽略，动画帧内的 dash 值才生效 —— 故 dasharray/dashoffset 全部写进关键帧 */
+  @keyframes sigDraw {
+    0% { stroke-dasharray: var(--da); stroke-dashoffset: var(--da); }
+    100% { stroke-dasharray: var(--da); stroke-dashoffset: 0; }
+  }
+  /* 字形初始隐藏：静态 dash 被 mask 忽略无法藏笔，改由 JS 接管后再显形（防字体加载期闪现全字） */
+  .write-sig-svg .sig-body { opacity: 0; }
   /* 铬金属渐变副题（参考 .liquid-text：display:block + #111→#777 渐变裁字） */
   .liquid-text {
     display: block;
@@ -858,7 +864,7 @@
               <path class="rp" d="M 483.4 2.1 L 487.2 5.1 L 511.8 8.5 L 515.6 8.5 L 517.3 6.1"></path>
             </mask>
           </defs>
-          <g mask="url(#sigReveal)">
+          <g class="sig-body" mask="url(#sigReveal)">
             <text x="130" y="168">陈</text><text x="320" y="168">成</text><text x="510" y="168">睿</text>
           </g>
         </svg>
@@ -2330,11 +2336,13 @@
           p.style.setProperty('--da', lens[i]);
           p.style.animation = 'none';
           p.style.animation = 'sigDraw ' + Math.max(0.06, lens[i] / total * DUR).toFixed(3)
-            + 's linear ' + (DELAY + extra + acc / total * DUR).toFixed(3) + 's forwards';
+            + 's linear ' + (DELAY + extra + acc / total * DUR).toFixed(3) + 's both';
           acc += lens[i];
         });
       }
       function start() {
+        const body = svg.querySelector('.sig-body');
+        if (body) body.style.opacity = '1';   // 接管完成，允许字形显形（此前靠 opacity:0 防闪现）
         if (reduce) {                  // 减动效：直接呈现完整签名
           paths.forEach(function (p) { p.style.animation = 'none'; p.style.strokeDashoffset = '0'; });
           return;
