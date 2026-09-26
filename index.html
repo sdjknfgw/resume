@@ -1038,7 +1038,7 @@
 
 <!-- 页脚 -->
 <footer class="relative z-10 py-10 text-center text-slate-400 text-xs border-t border-white/5">
-  <p>© 2026 陈成睿 · 最后更新 2026-08-26 · 常州工学院</p>
+  <p>© 2026 陈成睿 · 最后更新 <span id="lastUpdated">2026-09-26</span> · 常州工学院</p>
 </footer>
 
 <!-- Lightbox -->
@@ -1183,6 +1183,16 @@
     // 初始化 Lucide 图标
     lucide.createIcons();
     markDecorativeIcons();
+
+    // 页脚「最后更新」：自动取文件最后修改时间（每次部署即自动更新，取不到时保留静态兜底值）
+    (() => {
+      const el = document.getElementById('lastUpdated');
+      if (!el) return;
+      const lm = new Date(document.lastModified);
+      if (isNaN(lm.getTime())) return;
+      const pad = n => String(n).padStart(2, '0');
+      el.textContent = `${lm.getFullYear()}-${pad(lm.getMonth() + 1)}-${pad(lm.getDate())}`;
+    })();
 
     // Hero
     document.getElementById('heroSummary').textContent = resume.hero.summary;
