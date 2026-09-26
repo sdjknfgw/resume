@@ -2281,7 +2281,14 @@
         ctx.fillText('陈', 130, 168);
         ctx.fillText('成', 320, 168);
         ctx.fillText('睿', 510, 168);
-        // 笔刷合成：只保留骨架笔刷扫过的字迹 → 按笔顺「显影」而非描边
+        // 连笔牵丝：沿完整骨架画细墨线，笔与笔、字与字之间的连线处即成可见连笔（一笔贯穿三字）
+        ctx.strokeStyle = 'rgba(17, 17, 17, 0.62)';
+        ctx.lineWidth = 5;                  // 细而含蓄 → 行书「笔断意连」的牵丝感，不抢主笔
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.setLineDash([]);
+        ctx.stroke(path);
+        // 笔刷合成：只保留骨架笔刷扫过的字迹+牵丝 → 按笔顺「显影」而非描边
         ctx.globalCompositeOperation = 'destination-in';
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 88;
