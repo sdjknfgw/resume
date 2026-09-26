@@ -968,7 +968,7 @@
         <span class="sec-ico"><i data-lucide="briefcase"></i></span>
         <h2 class="section-title text-2xl md:text-3xl font-extrabold">经历</h2>
       </div>
-      <p class="text-sm text-slate-400 mb-4">校园、实习，还有暂时空着的那部分</p>
+      <p class="text-sm text-slate-400 mb-4">校园、项目和实习</p>
       <div id="expTabs" class="tabs-custom flex gap-1 bg-slate-900/50 border border-white/10 rounded-xl p-1 mb-5 overflow-x-auto scrollbar-none" role="tablist" aria-label="经历分类"></div>
       <div id="expPanels"></div>
     </div>
@@ -1102,8 +1102,10 @@
         company: "个人项目",
         role: "独立开发",
         period: "课余时间",
-        points: [
-          "做过 2 个 APP、1 个网站、2 个小游戏"
+        stats: [
+          { num: "2", unit: "个", label: "APP", icon: "smartphone" },
+          { num: "1", unit: "个", label: "网站", icon: "globe" },
+          { num: "2", unit: "个", label: "小游戏", icon: "gamepad-2" }
         ]
       },
       {
@@ -1298,6 +1300,30 @@
             </div>
           `;
         } else {
+          const statsHtml = (exp.stats && exp.stats.length) ? `
+            <div class="grid grid-cols-3 gap-2 md:gap-3">
+              ${exp.stats.map(s => `
+                <div class="glass-card metric-card p-3 md:p-4 text-center">
+                  <i data-lucide="${s.icon}" class="w-5 h-5 md:w-6 md:h-6 text-cyan-400 mx-auto mb-1.5"></i>
+                  <div class="flex items-baseline justify-center gap-1">
+                    <span class="metric-number text-xl md:text-3xl">${s.num}</span>
+                    <span class="text-xs md:text-sm font-semibold text-slate-400">${s.unit}</span>
+                  </div>
+                  <div class="text-xs md:text-sm text-slate-400 mt-1">${s.label}</div>
+                </div>
+              `).join('')}
+            </div>
+          ` : '';
+          const pointsHtml = (exp.points && exp.points.length) ? `
+            <ul class="space-y-1.5">
+              ${exp.points.map(p => `
+                <li class="flex items-start gap-2 text-sm text-slate-300">
+                  <span class="text-cyan-400 mt-0.5">▹</span>
+                  <span>${p}</span>
+                </li>
+              `).join('')}
+            </ul>
+          ` : '';
           card.innerHTML = `
             <div class="flex flex-col gap-2 mb-3">
               <div class="flex items-center gap-2">
@@ -1307,14 +1333,8 @@
               <div class="text-sm text-indigo-300 font-semibold">${exp.role}</div>
               <div class="text-xs text-slate-400">${exp.period}</div>
             </div>
-            <ul class="space-y-1.5">
-              ${exp.points.map(p => `
-                <li class="flex items-start gap-2 text-sm text-slate-300">
-                  <span class="text-cyan-400 mt-0.5">▹</span>
-                  <span>${p}</span>
-                </li>
-              `).join('')}
-            </ul>
+            ${statsHtml}
+            ${pointsHtml}
           `;
         }
         panel.appendChild(card);
