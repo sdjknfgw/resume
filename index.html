@@ -334,14 +334,32 @@
     color: #000;
     pointer-events: auto;
   }
-  /* 签名 Canvas：ZMX 行书字形按真实笔顺显影（initSignature 用骨架笔刷合成，无描边感） */
-  .signature-canvas {
+  /* 签名 SVG：ZMX 行书字形 + 笔画骨架 mask 逐笔显影（eonova 式书写动画，initSignature 编排时序） */
+  .write-sig-svg {
     display: block;
     width: 100%;
     max-width: 620px;
     margin: 0 auto;
-    aspect-ratio: 640 / 220;
+    cursor: pointer;
+    transition: filter 0.35s ease;
   }
+  .write-sig-svg:hover { filter: drop-shadow(0 0 10px rgba(0, 180, 200, 0.5)); }  /* eonova 式悬停发光 */
+  .write-sig-svg text {
+    font-family: 'Zhi Mang Xing', serif;
+    font-size: 190px;
+    fill: #111;
+    text-anchor: middle;
+  }
+  .write-sig-svg .rp {
+    stroke: #fff;             /* mask 白色笔刷 = 显影区 */
+    stroke-width: 88;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;      /* JS 接管前的初始隐藏态（防字形闪现） */
+    stroke-dashoffset: 1;
+  }
+  @keyframes sigDraw { to { stroke-dashoffset: 0; } }
   /* 铬金属渐变副题（参考 .liquid-text：display:block + #111→#777 渐变裁字） */
   .liquid-text {
     display: block;
@@ -466,6 +484,7 @@
     .badge-wrapper, .main-title, .description, .cta-row,
     .splash-name-latin { animation: none !important; }
     .splash-name-latin { clip-path: none; }
+    .write-sig-svg .rp { animation: none !important; stroke-dasharray: none !important; stroke-dashoffset: 0 !important; }
     .hero-name { clip-path: none !important; animation: none !important; }
     #splash { transition: none; animation: splashAutoHide 0.01s linear 15s forwards; }
   }
@@ -805,8 +824,44 @@
         <span class="system-badge">Chemical Engineering &times; AI</span>
       </div>
       <h1 class="main-title">
-        <!-- 动态签名：Canvas 按真实笔顺显影（ZMX 行书字形 + 骨架笔刷合成，initSignature 绘制） -->
-        <canvas id="signatureCanvas" class="signature-canvas" width="1280" height="440" role="img" aria-label="陈成睿"></canvas>
+        <!-- 动态签名：SVG 按真实笔顺逐笔显影（ZMX 行书字形 + 27 笔骨架 mask，eonova 式书写动画 + 悬停重播，initSignature 编排） -->
+        <svg id="signatureSvg" class="write-sig-svg" viewBox="0 -12 640 232" fill="none" role="img" aria-label="陈成睿">
+          <defs>
+            <mask id="sigReveal" maskUnits="userSpaceOnUse">
+              <!-- 笔画骨架（Make Me a Hanzi medians，与 ZMX 字形布局对齐）：白色笔刷沿笔顺逐笔扫过显影 -->
+              <path class="rp" d="M 60.2 143.9 L 62.4 142.1 L 66.7 141.9 L 85.9 149.7 L 90.1 150.1 L 92.6 150.1 L 95.9 147.2 L 94.4 141.0 L 85.4 124.4 L 83.4 118.2 L 85.4 111.5 L 94.2 97.2 L 95.7 90.9 L 94.8 84.5 L 94.2 83.4 L 89.2 83.1 L 71.6 87.4"></path>
+              <path class="rp" d="M 46.8 145.9 L 53.1 139.9 L 55.3 135.2 L 56.9 121.8 L 57.5 52.3 L 53.9 10.1 L 55.5 -8.0"></path>
+              <path class="rp" d="M 109.6 116.0 L 114.5 114.6 L 125.9 114.6 L 148.9 118.6 L 185.9 127.8 L 199.4 128.2"></path>
+              <path class="rp" d="M 148.4 168.0 L 155.1 157.7 L 140.4 112.4 L 121.6 67.5 L 131.2 65.9 L 188.2 74.6 L 200.0 72.6"></path>
+              <path class="rp" d="M 151.6 97.2 L 155.8 94.1 L 161.8 86.0 L 160.9 9.9 L 158.3 2.5 L 155.6 0.0 L 129.2 11.9"></path>
+              <path class="rp" d="M 123.2 43.8 L 117.6 30.6 L 104.6 11.2"></path>
+              <path class="rp" d="M 183.7 47.2 L 207.6 24.6 L 211.4 18.4 L 213.2 10.3"></path>
+              <path class="rp" d="M 276.4 101.0 L 280.1 98.7 L 286.4 99.4 L 331.0 110.2 L 346.5 115.5 L 360.9 117.1"></path>
+              <path class="rp" d="M 260.0 104.8 L 266.7 99.8 L 268.8 95.0 L 267.8 62.5 L 263.8 39.9 L 259.6 28.2 L 252.9 16.7 L 243.7 6.2 L 232.0 -1.7"></path>
+              <path class="rp" d="M 274.5 59.4 L 281.6 64.0 L 299.4 67.8 L 302.5 67.8 L 306.7 63.8 L 305.2 44.7 L 302.7 32.0 L 297.3 20.0 L 293.7 16.7 L 280.1 25.9"></path>
+              <path class="rp" d="M 306.3 168.0 L 317.8 157.3 L 321.4 120.9 L 327.2 95.2 L 340.6 57.9 L 351.3 37.4 L 358.2 27.2 L 370.7 12.5 L 382.0 2.3 L 389.4 -2.8 L 398.6 -5.5 L 401.7 -4.9 L 403.8 1.2 L 408.0 29.0"></path>
+              <path class="rp" d="M 362.8 88.9 L 368.2 80.9 L 363.0 64.6 L 354.4 47.5 L 347.7 37.8 L 337.3 26.9 L 316.1 11.5"></path>
+              <path class="rp" d="M 348.4 154.6 L 363.8 147.1 L 371.4 140.2"></path>
+              <path class="rp" d="M 496.1 168.0 L 503.2 161.2 L 502.7 139.4 L 499.5 136.2"></path>
+              <path class="rp" d="M 509.4 149.5 L 513.0 151.1 L 534.8 154.5 L 541.2 154.1"></path>
+              <path class="rp" d="M 450.2 133.2 L 452.0 127.5 L 451.0 122.3 L 442.7 109.0 L 440.9 98.1"></path>
+              <path class="rp" d="M 457.4 122.5 L 460.1 124.7 L 494.7 130.7 L 540.2 136.4 L 551.3 136.2 L 556.7 133.4 L 559.5 128.3 L 544.0 112.6"></path>
+              <path class="rp" d="M 475.8 111.4 L 483.0 110.2 L 517.7 117.3 L 526.1 116.6"></path>
+              <path class="rp" d="M 469.1 103.2 L 472.3 97.1 L 450.6 77.4 L 447.8 76.6 L 447.8 75.0"></path>
+              <path class="rp" d="M 526.3 103.4 L 544.6 92.9 L 549.5 85.4"></path>
+              <path class="rp" d="M 506.4 98.1 L 499.7 96.9 L 490.9 85.2 L 478.2 71.7 L 452.2 50.0 L 433.5 38.1 L 422.8 33.5"></path>
+              <path class="rp" d="M 507.4 90.7 L 509.0 91.5 L 515.6 87.5 L 516.8 85.8 L 541.8 69.9 L 563.4 59.7 L 572.6 58.7 L 597.2 59.5"></path>
+              <path class="rp" d="M 473.6 59.3 L 477.0 57.4 L 478.2 54.0 L 478.8 26.0 L 477.4 5.9 L 478.6 -3.0"></path>
+              <path class="rp" d="M 483.2 58.9 L 487.2 57.6 L 519.9 64.5 L 524.3 62.9 L 527.9 59.1 L 529.5 17.6 L 527.7 6.3 L 530.1 -8.0"></path>
+              <path class="rp" d="M 483.4 37.5 L 486.0 39.7 L 497.5 41.9 L 507.2 43.3 L 514.2 42.3"></path>
+              <path class="rp" d="M 484.2 20.6 L 486.0 22.8 L 502.1 25.6 L 511.2 26.6 L 515.6 25.2"></path>
+              <path class="rp" d="M 483.4 2.1 L 487.2 5.1 L 511.8 8.5 L 515.6 8.5 L 517.3 6.1"></path>
+            </mask>
+          </defs>
+          <g mask="url(#sigReveal)">
+            <text x="130" y="168">陈</text><text x="320" y="168">成</text><text x="510" y="168">睿</text>
+          </g>
+        </svg>
         <span class="liquid-text splash-name-latin">Chen Chengrui</span>
       </h1>
       <p class="description">化学工程与工艺 · 常州工学院。把化工的严谨和 AI 的效率放在一起用，是我现在想搞明白的事。</p>
@@ -2258,61 +2313,40 @@
       };
     })();
 
-    // ===== 启动页签名：按真实笔顺显影（ZMX 行书字形 + 骨架笔刷 destination-in 合成，非描边）=====
+    // ===== 启动页签名：SVG 按真实笔顺逐笔显影（eonova 式：dash 沿笔画推进 + 悬停重播 + 发光）=====
     (function initSignature() {
-      const cv = document.getElementById('signatureCanvas');
-      if (!cv || !cv.getContext) return;
-      const ctx = cv.getContext('2d');
-      if (!ctx) return;
-      // 陈(7笔)→成(6笔)→睿(14笔) 的笔顺骨架（Make Me a Hanzi medians），单条连续路径：
-      // 笔间直线连接 = 书写时笔不离纸的显影轨迹，dash 沿累计长度推进 = 严格按笔顺显影
-      const SK = 'M 63.4 161.0 L 65.5 159.3 L 69.6 159.1 L 87.9 166.5 L 91.9 166.9 L 94.3 166.9 L 97.5 164.2 L 96.0 158.2 L 87.5 142.4 L 85.5 136.5 L 87.5 130.1 L 95.8 116.4 L 97.3 110.4 L 96.4 104.3 L 95.8 103.2 L 91.1 103.0 L 74.2 107.0 L 50.6 162.9 L 56.6 157.1 L 58.7 152.7 L 60.2 139.9 L 60.8 73.6 L 57.4 33.3 L 58.9 16.0 L 110.5 134.3 L 115.2 133.0 L 126.1 133.0 L 148.0 136.9 L 183.4 145.6 L 196.2 146.1 L 147.6 184.0 L 154.0 174.2 L 139.9 130.9 L 122.0 88.1 L 131.2 86.6 L 185.5 94.9 L 196.8 93.0 L 150.6 116.4 L 154.6 113.4 L 160.4 105.8 L 159.5 33.1 L 157.0 26.0 L 154.4 23.7 L 129.3 35.0 L 123.5 65.5 L 118.2 52.9 L 105.8 34.3 L 181.3 68.7 L 204.1 47.1 L 207.7 41.2 L 209.4 33.5 L 277.7 119.2 L 281.4 116.9 L 287.5 117.5 L 330.6 128.1 L 345.6 133.1 L 359.6 134.8 L 261.9 122.8 L 268.4 117.9 L 270.5 113.3 L 269.4 81.9 L 265.6 60.0 L 261.5 48.6 L 255.0 37.5 L 246.1 27.3 L 234.8 19.6 L 275.9 78.8 L 282.8 83.3 L 300.0 86.9 L 303.1 86.9 L 307.1 83.1 L 305.7 64.6 L 303.3 52.3 L 298.0 40.7 L 294.6 37.5 L 281.4 46.4 L 306.7 184.0 L 317.9 173.7 L 321.3 138.4 L 327.0 113.5 L 340.0 77.4 L 350.3 57.5 L 357.0 47.6 L 369.1 33.4 L 380.1 23.5 L 387.2 18.6 L 396.1 16.0 L 399.1 16.6 L 401.2 22.5 L 405.2 49.4 L 361.4 107.4 L 366.7 99.7 L 361.6 83.9 L 353.3 67.3 L 346.9 57.9 L 336.7 47.4 L 316.3 32.4 L 347.5 171.0 L 362.5 163.7 L 369.8 157.0 L 496.7 184.0 L 503.6 177.6 L 503.0 156.7 L 500.0 153.7 L 509.4 166.4 L 512.8 167.9 L 533.7 171.1 L 539.8 170.7 L 452.9 150.8 L 454.6 145.3 L 453.7 140.4 L 445.7 127.7 L 444.0 117.3 L 459.8 140.6 L 462.4 142.7 L 495.4 148.4 L 538.8 153.9 L 549.4 153.7 L 554.6 151.0 L 557.2 146.1 L 542.4 131.1 L 477.4 130.0 L 484.2 128.8 L 517.4 135.6 L 525.4 134.9 L 470.9 122.2 L 474.0 116.3 L 453.3 97.5 L 450.7 96.8 L 450.7 95.3 L 525.5 122.4 L 543.0 112.3 L 547.7 105.1 L 506.6 117.3 L 500.1 116.1 L 491.8 104.9 L 479.7 92.0 L 454.8 71.4 L 437.0 60.0 L 426.8 55.6 L 507.5 110.2 L 509.1 111.0 L 515.3 107.2 L 516.4 105.5 L 540.3 90.3 L 561.0 80.7 L 569.7 79.7 L 593.2 80.5 L 475.3 80.3 L 478.5 78.4 L 479.7 75.2 L 480.2 48.4 L 478.9 29.3 L 480.0 20.7 L 484.4 79.9 L 488.2 78.6 L 519.5 85.2 L 523.7 83.7 L 527.1 80.1 L 528.6 40.5 L 526.9 29.7 L 529.2 16.0 L 484.6 59.4 L 487.1 61.5 L 498.1 63.6 L 507.3 64.9 L 514.0 64.0 L 485.3 43.3 L 487.1 45.4 L 502.4 48.0 L 511.1 49.0 L 515.3 47.7 L 484.6 25.7 L 488.2 28.5 L 511.7 31.7 L 515.3 31.7 L 517.0 29.5';
-      const TOTAL = 4188;              // 骨架总长（含笔间连线，运行前已精确测定）
-      const W = 640, H = 220, S = 2;   // 逻辑坐标 640x220，canvas 内部 2x 超采样
-      const path = new Path2D(SK);
+      const svg = document.getElementById('signatureSvg');
+      if (!svg) return;
+      const paths = Array.from(svg.querySelectorAll('.rp'));
+      if (!paths.length) return;
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const lens = paths.map(function (p) { return p.getTotalLength(); });
+      const total = lens.reduce(function (a, b) { return a + b; }, 0);
+      const DUR = 2.8, DELAY = 0.35;   // 总书写时长 / 起笔延迟
 
-      function draw(p) {
-        ctx.setTransform(S, 0, 0, S, 0, 0);
-        ctx.clearRect(0, 0, W, H);
-        ctx.font = '190px "Zhi Mang Xing", "Ma Shan Zheng", serif';
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#111';
-        ctx.fillText('陈', 130, 168);
-        ctx.fillText('成', 320, 168);
-        ctx.fillText('睿', 510, 168);
-        // 连笔牵丝：沿完整骨架画细墨线，笔与笔、字与字之间的连线处即成可见连笔（一笔贯穿三字）
-        ctx.strokeStyle = 'rgba(17, 17, 17, 0.62)';
-        ctx.lineWidth = 5;                  // 细而含蓄 → 行书「笔断意连」的牵丝感，不抢主笔
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.setLineDash([]);
-        ctx.stroke(path);
-        // 笔刷合成：只保留骨架笔刷扫过的字迹+牵丝 → 按笔顺「显影」而非描边
-        ctx.globalCompositeOperation = 'destination-in';
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 88;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.setLineDash([TOTAL, TOTAL + 10]);
-        ctx.lineDashOffset = TOTAL * (1 - p);
-        ctx.stroke(path);
-        ctx.globalCompositeOperation = 'source-over';
+      function schedule(extra) {       // 按累计长度编排每笔的 delay/duration = 严格笔顺
+        let acc = 0;
+        paths.forEach(function (p, i) {
+          p.style.setProperty('--da', lens[i]);
+          p.style.animation = 'none';
+          p.style.animation = 'sigDraw ' + Math.max(0.06, lens[i] / total * DUR).toFixed(3)
+            + 's linear ' + (DELAY + extra + acc / total * DUR).toFixed(3) + 's forwards';
+          acc += lens[i];
+        });
       }
-
       function start() {
-        if (reduce) { draw(1); return; }   // 减动效：直接呈现完整签名
-        draw(0);
-        const DUR = 2000, DELAY = 350;
-        const t0 = performance.now() + DELAY;
-        const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-        (function tick(now) {
-          const t = Math.min(1, Math.max(0, (now - t0) / DUR));
-          draw(ease(t));
-          if (t < 1) requestAnimationFrame(tick);
-        })(performance.now());
+        if (reduce) {                  // 减动效：直接呈现完整签名
+          paths.forEach(function (p) { p.style.animation = 'none'; p.style.strokeDashoffset = '0'; });
+          return;
+        }
+        schedule(0);
+        svg.addEventListener('mouseenter', function () {   // eonova 式交互：悬停重播
+          paths.forEach(function (p) { p.style.animation = 'none'; });
+          void svg.getBoundingClientRect();                // 强制 reflow 重置动画
+          schedule(-DELAY + 0.05);
+        });
       }
-      // 行书字体就绪后再起笔（失败也照画，fallback 字体兜底）
+      // 行书字体就绪后再起笔（失败也照常，fallback 字体兜底）
       if (document.fonts && document.fonts.load) {
         document.fonts.load('190px "Zhi Mang Xing"', '陈成睿').then(start, start);
       } else {
