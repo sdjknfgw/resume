@@ -352,19 +352,21 @@
   }
   .write-sig-svg .rp {
     stroke: #fff;             /* mask 白色笔刷 = 显影区 */
-    stroke-width: 88;
+    stroke-width: 55;           /* 笔刷收窄至 55：显影中途即可辨字形，笔画间仍保持连通 */
     fill: none;
     stroke-linecap: round;
     stroke-linejoin: round;
-    stroke-dasharray: 1;      /* JS 接管前的初始隐藏态（防字形闪现） */
+    stroke: transparent;      /* 初始隐藏态第一层：笔画未接管前完全不渲染（线帽也不画，杜绝 round cap 残影） */
+    stroke-dasharray: 1;      /* 初始隐藏态第二层：dash 全隐；Chrome 下 mask 内静态 dash 不生效，靠 stroke:transparent + JS 接管后显形 */
     stroke-dashoffset: 1;
   }
-  /* Chrome 已知行为：mask 内静态 dash 值被忽略，动画帧内的 dash 值才生效 —— 故 dasharray/dashoffset 全部写进关键帧 */
+  /* Chrome 已知行为：mask 内静态 dash 值被忽略，动画帧内的 dash 值才生效 —— 故 dasharray/dashoffset 全部写进关键帧；
+     初始显色由 JS 在强制刷新后统一置回 #fff（此前 .rp 为 stroke:transparent，确保未接管的笔画连 round 线帽都不渲染） */
   @keyframes sigDraw {
     0% { stroke-dasharray: var(--da); stroke-dashoffset: var(--da); }
     100% { stroke-dasharray: var(--da); stroke-dashoffset: 0; }
   }
-  /* 字形初始隐藏：静态 dash 被 mask 忽略无法藏笔，改由 JS 接管后再显形（防字体加载期闪现全字） */
+  /* 字形初始隐藏：静态 dash 被 mask 忽略无法藏笔，JS 在起笔前强制刷新计算样式后才置 1（防字体加载期与首帧前闪现全字） */
   .write-sig-svg .sig-body { opacity: 0; }
   /* 铬金属渐变副题（参考 .liquid-text：display:block + #111→#777 渐变裁字） */
   .liquid-text {
@@ -387,7 +389,7 @@
     background-image: linear-gradient(180deg, #111111, #4d4d4d);
     /* 揭示动画：clip 右边界从 100% 收到 0，模拟笔尖划过；上下 -30% 防花体下伸笔画被裁 */
     clip-path: inset(-30% 100% -30% 0);
-    animation: latinWrite 1.1s var(--chrome-ease) 1.55s forwards;
+    animation: latinWrite 1.1s var(--chrome-ease) 2.82s forwards;
   }
   @keyframes latinWrite { to { clip-path: inset(-30% 0 -30% 0); } }
   .description {
@@ -451,8 +453,8 @@
 
   /* ===== 文字入场：签名自带动效，徽标/介绍/按钮交错浮现，节奏跟随签名完成时点 ===== */
   .badge-wrapper { animation: splashRise 0.9s var(--chrome-ease) 0.12s both; }
-  .description   { animation: splashRise 0.9s var(--chrome-ease) 2.2s both; }
-  .cta-row       { animation: splashRise 0.9s var(--chrome-ease) 2.45s both; }
+  .description   { animation: splashRise 0.9s var(--chrome-ease) 2.86s both; }
+  .cta-row       { animation: splashRise 0.9s var(--chrome-ease) 3.11s both; }
   @keyframes splashRise {
     from { opacity: 0; transform: translateY(26px); filter: blur(6px); }
     to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
@@ -830,35 +832,35 @@
         <span class="system-badge">Chemical Engineering &times; AI</span>
       </div>
       <h1 class="main-title">
-        <!-- 动态签名：SVG 按真实笔顺逐笔显影（ZMX 行书字形 + 23 笔骨架 mask，eonova 式书写动画 + 悬停重播，initSignature 编排） -->
+        <!-- 动态签名：SVG 按真实笔顺逐笔显影（ZMX 行书字形 + 24 笔骨架 mask，eonova 式书写动画 + 悬停重播，initSignature 编排） -->
         <svg id="signatureSvg" class="write-sig-svg" viewBox="0 -12 640 232" fill="none" role="img" aria-label="陈成睿">
           <defs>
             <mask id="sigReveal" maskUnits="userSpaceOnUse">
-              <!-- 笔画骨架（Make Me a Hanzi medians，y 向上坐标系翻转到 SVG；陈8+成4+睿11=23 笔，行书连笔简省的 5 笔已剔除）：白色笔刷沿笔顺逐笔扫过显影 -->
-              <path class="rp" d="M 56.3 17.7 L 58.7 19.5 L 62.2 19.5 L 82.0 12.7 L 87.5 15.3 L 86.2 21.7 L 77.2 42.5 L 77.8 47.2 L 89.7 64.3 L 91.7 70.0 L 91.0 76.4 L 90.3 78.1 L 85.1 78.4 L 67.3 74.2 L 66.2 72.9"></path>
+              <!-- 笔画骨架（Make Me a Hanzi medians，y 向上坐标系翻转到 SVG；陈 8 + 成 4 + 睿 11 = 23 笔，其中「陈」右部竖钩拆为竖+钩两笔共 24 条 path，行书连笔简省的 5 笔已剔除）：白色笔刷沿笔顺逐笔扫过显影 -->
+                            <path class="rp" d="M 56.3 17.7 L 58.7 19.5 L 62.2 19.5 L 82.0 12.7 L 87.5 15.3 L 86.2 21.7 L 77.2 42.5 L 77.8 47.2 L 89.7 64.3 L 91.7 70.0 L 91.0 76.4 L 90.3 78.1 L 85.1 78.4 L 67.3 74.2 L 66.2 72.9"></path>
               <path class="rp" d="M 42.0 14.4 L 47.7 19.5 L 51.2 25.8 L 52.8 50.2 L 52.5 99.4 L 50.6 125.6 L 46.2 152.0 L 46.6 164.3"></path>
+              <path class="rp" d="M 132.5 -6.9 L 143.3 2.5 L 138.7 93.7"></path>
+              <path class="rp" d="M 79.6 99.4 L 90.6 101.4 L 150.8 92.4 L 193.0 88.0 L 211.0 92.2"></path>
+              <path class="rp" d="M 138.7 93.7 L 134.3 117.9 L 126.2 135.9 L 114.5 149.1 L 95.2 161.0 L 75.0 168.0"></path>
               <path class="rp" d="M 112.1 35.9 L 127.3 36.8 L 148.6 32.9 L 166.1 27.4 L 178.9 26.9"></path>
               <path class="rp" d="M 105.3 58.8 L 116.9 68.2 L 120.4 75.9"></path>
               <path class="rp" d="M 173.0 46.1 L 176.3 52.6 L 156.0 70.4"></path>
-              <path class="rp" d="M 79.6 99.4 L 90.6 101.4 L 150.8 92.4 L 193.0 88.0 L 211.0 92.2"></path>
-              <path class="rp" d="M 132.5 -6.9 L 143.3 2.5 L 138.7 93.7 L 134.3 117.9 L 126.2 135.9 L 114.5 149.1 L 95.2 161.0 L 75.0 168.0"></path>
               <path class="rp" d="M 144.6 99.2 L 147.2 107.1 L 156.3 121.4 L 179.5 150.9 L 188.6 158.3 L 218.0 166.0"></path>
               <path class="rp" d="M 276.4 61.5 L 280.1 63.8 L 286.4 63.2 L 331.0 52.3 L 346.5 47.0 L 360.9 45.4"></path>
               <path class="rp" d="M 260.0 57.7 L 266.7 62.7 L 268.8 67.5 L 267.8 100.0 L 263.8 122.6 L 259.6 134.3 L 252.9 145.8 L 243.7 156.3 L 232.0 164.2"></path>
-              <path class="rp" d="M 274.5 103.1 L 281.6 98.5 L 299.4 94.8 L 302.5 94.8 L 306.7 98.7 L 305.2 117.8 L 302.7 130.5 L 297.3 142.5 L 293.7 145.8 L 280.1 136.6"></path>
               <path class="rp" d="M 306.3 -5.5 L 317.8 5.2 L 321.4 41.6 L 327.2 67.3 L 340.6 104.6 L 351.3 125.1 L 358.2 135.4 L 370.7 150.0 L 382.0 160.3 L 389.4 165.3 L 398.6 168.0 L 401.7 167.4 L 403.8 161.3 L 408.0 133.5"></path>
+              <path class="rp" d="M 274.5 103.1 L 281.6 98.5 L 299.4 94.8 L 302.5 94.8 L 306.7 98.7 L 305.2 117.8 L 302.7 130.5 L 297.3 142.5 L 293.7 145.8 L 280.1 136.6"></path>
               <path class="rp" d="M 496.1 -8.0 L 503.2 -1.2 L 502.7 20.6 L 499.5 23.8"></path>
               <path class="rp" d="M 509.4 10.5 L 513.0 8.9 L 534.8 5.5 L 541.2 5.9"></path>
-              <path class="rp" d="M 450.2 26.8 L 452.0 32.5 L 451.0 37.7 L 442.7 51.0 L 440.9 61.9"></path>
               <path class="rp" d="M 457.4 37.5 L 460.1 35.3 L 494.7 29.3 L 540.2 23.6 L 551.3 23.8 L 556.7 26.6 L 559.5 31.7 L 544.0 47.4"></path>
               <path class="rp" d="M 475.8 48.6 L 483.0 49.8 L 517.7 42.7 L 526.1 43.4"></path>
+              <path class="rp" d="M 450.2 26.8 L 452.0 32.5 L 451.0 37.7 L 442.7 51.0 L 440.9 61.9"></path>
               <path class="rp" d="M 469.1 56.8 L 472.3 62.9 L 450.6 82.6 L 447.8 83.4 L 447.8 85.0"></path>
               <path class="rp" d="M 526.3 56.6 L 544.6 67.1 L 549.5 74.6"></path>
               <path class="rp" d="M 506.4 61.9 L 499.7 63.1 L 490.9 74.8 L 478.2 88.3 L 452.2 110.0 L 433.5 121.9 L 422.8 126.5"></path>
               <path class="rp" d="M 507.4 69.3 L 509.0 68.5 L 515.6 72.5 L 516.8 74.2 L 541.8 90.1 L 563.4 100.3 L 572.6 101.3 L 597.2 100.5"></path>
               <path class="rp" d="M 473.6 100.7 L 477.0 102.6 L 478.2 106.0 L 478.8 134.0 L 477.4 154.1 L 478.6 163.0"></path>
               <path class="rp" d="M 483.2 101.1 L 487.2 102.4 L 519.9 95.5 L 524.3 97.1 L 527.9 100.9 L 529.5 142.4 L 527.7 153.7 L 530.1 168.0"></path>
-
             </mask>
           </defs>
           <g class="sig-body" mask="url(#sigReveal)">
@@ -2372,30 +2374,48 @@
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const lens = paths.map(function (p) { return p.getTotalLength(); });
       const total = lens.reduce(function (a, b) { return a + b; }, 0);
-      const DUR = 2.8, DELAY = 0.35;   // 总书写时长 / 起笔延迟
+      const DUR = 2.42, DELAY = 0.35;  // 总书写时长（末笔收在 2.77s） / 起笔延迟
 
-      function schedule(extra) {       // 按累计长度编排每笔的 delay/duration = 严格笔顺
+      function schedule() {            // DOM 顺序即笔顺；按累计长度编排每笔 delay/duration，笔内匀速推进
         let acc = 0;
         paths.forEach(function (p, i) {
           p.style.setProperty('--da', lens[i]);
           p.style.animation = 'none';
           p.style.animation = 'sigDraw ' + Math.max(0.06, lens[i] / total * DUR).toFixed(3)
-            + 's linear ' + (DELAY + extra + acc / total * DUR).toFixed(3) + 's both';
+            + 's linear ' + (DELAY + acc / total * DUR).toFixed(3) + 's both';
           acc += lens[i];
         });
       }
       function start() {
         const body = svg.querySelector('.sig-body');
-        if (body) body.style.opacity = '1';   // 接管完成，允许字形显形（此前靠 opacity:0 防闪现）
         if (reduce) {                  // 减动效：直接呈现完整签名
-          paths.forEach(function (p) { p.style.animation = 'none'; p.style.strokeDashoffset = '0'; });
+          paths.forEach(function (p) {
+            p.style.animation = 'none';
+            p.style.stroke = '#fff';
+            p.style.strokeDasharray = 'none';
+            p.style.strokeDashoffset = '0';
+          });
+          if (body) body.style.opacity = '1';
           return;
         }
-        schedule(0);
-        svg.addEventListener('mouseenter', function () {   // eonova 式交互：悬停重播
-          paths.forEach(function (p) { p.style.animation = 'none'; });
-          void svg.getBoundingClientRect();                // 强制 reflow 重置动画
-          schedule(-DELAY + 0.05);
+        schedule();
+        // 先强制样式刷新：让 24 条笔画的 0% 关键帧（dashoffset = 全长 = 全隐）进入计算样式，
+        // 再放开字形显形。Chrome 下 mask 内静态 dash 值不生效，不先刷新会在首帧前整字闪现。
+        void svg.getBoundingClientRect();
+        // 0% 关键帧（dashoffset = 全长 = 全隐）已进入计算样式，此刻为每条 path 显色。
+        // 放在刷新之后：若放在刷新前，浏览器可能把 static 的 stroke:transparent 与首帧合成，露出未接管的笔画。
+        paths.forEach(function (p) { p.style.stroke = '#fff'; });
+        if (body) body.style.opacity = '1';   // 此刻各笔仍处 0% 隐藏态，显形安全
+        // 只播放一次：末笔结束后卸掉动画并把终态写回静态属性，释放合成层
+        const last = paths[paths.length - 1];
+        last.addEventListener('animationend', function onEnd() {
+          last.removeEventListener('animationend', onEnd);
+          paths.forEach(function (p) {
+            p.style.animation = 'none';
+            p.style.stroke = '#fff';
+            p.style.strokeDasharray = 'none';
+            p.style.strokeDashoffset = '0';
+          });
         });
       }
       // 行书字体就绪后再起笔（失败也照常，fallback 字体兜底）
