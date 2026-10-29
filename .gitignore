@@ -1,0 +1,7 @@
+﻿.trae/
+.workbuddy/
+.claude/
+components/
+tools/
+*.pdf
+_site-preview.png

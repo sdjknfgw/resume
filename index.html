@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -34,18 +34,23 @@
 }
 </script>
 
-<!-- Tailwind CSS CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- Lucide Icons CDN（锁定版本，避免 @latest 未来更新破坏图标） -->
-<script src="https://unpkg.com/lucide@0.460.0"></script>
+<!-- 样式与依赖全部本地自托管：cdn.tailwindcss.com / fonts.googleapis.com 在部分网络下不可达，
+     一旦请求失败整页排版会直接失效（无栅格、无字号层级、卡片塌成一张长图） -->
+<link rel="stylesheet" href="assets/tailwind.css">
+<!-- Lucide 图标（锁定 0.460.0，避免 @latest 未来更新破坏图标） -->
+<script src="assets/vendor/lucide.min.js"></script>
 <!-- three.js：启动页液态铬液滴（用 classic 构建，与 head 内联脚本同生命周期，避免 module 异步竞态） -->
-<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-<!-- Google Fonts: Plus Jakarta Sans（拉丁）+ Noto Sans SC（中文，启动页标题/正文） -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="assets/vendor/three.min.js"></script>
 <style>
+/* Plus Jakarta Sans（拉丁字母 / 数字）：本地自托管，替代 fonts.googleapis.com 的外链 */
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url(assets/fonts/plus-jakarta-sans-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 /* 行书签名与花体拼音：本地子集字体（仅含所需字形，离线可靠加载，不再依赖 Google Fonts） */
 @font-face { font-family: "Ma Shan Zheng"; font-style: normal; font-weight: 400; font-display: swap; src: url(msz-114.woff2) format("woff2"); unicode-range: U+7e, U+2026, U+4e03, U+4e25, U+4e30, U+4e34, U+4e45, U+4e5d, U+4e89, U+4eae, U+4ed8, U+4f11, U+4f19, U+4f24, U+4f34, U+4f59, U+4f73, U+4f9d, U+4fb5, U+5047, U+505c, U+5170, U+519c, U+51cf, U+5267, U+5356, U+5374, U+5382, U+538b, U+53e6, U+5426, U+542b, U+542f, U+5462, U+5473, U+554a, U+5566, U+5708, U+571f, U+5757, U+57df, U+57f9, U+5802, U+590f, U+591c, U+591f, U+592b, U+5965, U+5979, U+5a01, U+5a5a, U+5b63, U+5b69, U+5b81, U+5ba1, U+5ba3, U+5c3c, U+5c42, U+5c81, U+5de7, U+5dee, U+5e0c, U+5e10, U+5e55, U+5e86, U+5e8f, U+5ea7, U+5f02, U+5f52, U+5f81, U+5ff5, U+60ca, U+60e0, U+6279, U+62c5, U+62ff, U+63cf, U+6444, U+64cd, U+653b, U+65bd, U+65e9, U+665a, U+66b4, U+66fe, U+6728, U+6742, U+677e, U+67b6, U+680f, U+68a6, U+68c0, U+699c, U+6b4c, U+6b66, U+6b7b, U+6bcd, U+6bdb, U+6c38, U+6c47, U+6c49, U+6cb3, U+6cb9, U+6ce2, U+6d32, U+6d3e, U+6d4f, U+6e56, U+6fc0, U+7075, U+7206, U+725b, U+72c2, U+73ed, U+7565, U+7591, U+7597, U+75c5, U+76ae, U+76d1, U+76df, U+7834, U+7968, U+7981, U+79c0, U+7a7f, U+7a81, U+7ae5, U+7b14, U+7c89, U+7d27, U+7eaf, U+7eb3, U+7eb8, U+7ec7, U+7ee7, U+7eff, U+7f57, U+7ffb, U+805a, U+80a1, U+822c, U+82cf, U+82e5, U+8363, U+836f, U+84dd, U+878d, U+8840, U+8857, U+8863, U+8865, U+8b66, U+8bb2, U+8bda, U+8c01, U+8c08, U+8c46, U+8d1f, U+8d35, U+8d5b, U+8d5e, U+8da3, U+8ddf, U+8f93, U+8fdd, U+8ff0, U+8ff7, U+8ffd, U+9000, U+9047, U+9152, U+949f, U+94c1, U+94f6, U+9646, U+9648, U+9669, U+969c, U+96ea, U+97e9, U+987b, U+987e, U+989d, U+9970, U+9986, U+9c7c, U+9c9c; }
 @font-face { font-family: "Ma Shan Zheng"; font-style: normal; font-weight: 400; font-display: swap; src: url(msz-118.woff2) format("woff2"); unicode-range: U+d, U+3e, U+5f, U+7c, U+a0, U+a9, U+4e09-4e0b, U+4e0d-4e0e, U+4e13, U+4e1a, U+4e2a, U+4e3a-4e3b, U+4e4b, U+4e86, U+4e8e, U+4ea7, U+4eba, U+4ee4-4ee5, U+4eec, U+4f1a, U+4f4d, U+4f53, U+4f5c, U+4f60, U+4fe1, U+5165, U+5168, U+516c, U+5173, U+5176, U+5185, U+51fa, U+5206, U+5230, U+5236, U+524d, U+529b, U+52a0-52a1, U+52a8, U+5316, U+533a, U+53cb, U+53d1, U+53ef, U+53f7-53f8, U+5408, U+540c-540e, U+544a, U+548c, U+54c1, U+56de, U+56fd-56fe, U+5728, U+5730, U+5907, U+5916, U+591a, U+5927, U+5929, U+597d, U+5982, U+5b50, U+5b66, U+5b89, U+5b9a, U+5b9e, U+5ba2, U+5bb6, U+5bf9, U+5c0f, U+5de5, U+5e02, U+5e73-5e74, U+5e7f, U+5ea6, U+5f00, U+5f0f, U+5f53, U+5f55, U+5fae, U+5fc3, U+6027, U+606f, U+60a8, U+60c5, U+610f, U+6210-6211, U+6237, U+6240, U+624b, U+6280, U+62a5, U+63a5, U+63a8, U+63d0, U+6536, U+6570, U+6587, U+65b9, U+65e0, U+65f6, U+660e, U+662d, U+662f, U+66f4, U+6700, U+670d, U+672c, U+673a, U+6743, U+6765, U+679c, U+682a, U+6b21, U+6b63, U+6cbb, U+6cd5, U+6ce8, U+6d3b, U+70ed, U+7247-7248, U+7269, U+7279, U+73b0, U+7406, U+751f, U+7528, U+7535, U+767b, U+76f8, U+770b, U+77e5, U+793e, U+79d1, U+7ad9, U+7b49, U+7c7b, U+7cfb, U+7ebf, U+7ecf, U+7f8e, U+8005, U+8054, U+80fd, U+81ea, U+85cf, U+884c, U+8868, U+8981, U+89c6, U+8bba, U+8bdd, U+8bf4, U+8bf7, U+8d44, U+8fc7, U+8fd8-8fd9, U+8fdb, U+901a, U+9053, U+90e8, U+91d1, U+957f, U+95e8, U+95ee, U+95f4, U+9762, U+9875, U+9898, U+9996, U+9ad8, U+ff01, U+ff08-ff09; }
@@ -54,17 +59,7 @@
 @font-face { font-family: "Zhi Mang Xing"; font-style: normal; font-weight: 400; font-display: swap; src: url(zmx.woff2) format("woff2"); unicode-range: U+9648, U+6210, U+777f; }
 </style>
 
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        fontFamily: {
-          sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', '"Noto Sans SC"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
-        },
-      },
-    },
-  };
-</script>
+<!-- 字体栈已固化在 tailwind.css（fontFamily.sans），不再使用运行时 tailwind.config -->
 
 <style>
   /* ============================================================
@@ -126,16 +121,16 @@
 
   /* ===== 区块标题：铬金属渐变文字 + 细下划线 ===== */
   .section-title {
-    position: relative; display: inline-block; padding-bottom: 8px;
+    position: relative; display: inline-block; padding-bottom: 12px;
     background: var(--chrome-metal);
     -webkit-background-clip: text; background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
-    letter-spacing: -0.03em;
+    letter-spacing: 0.02em;
   }
   .section-title::after {
-    content: ""; position: absolute; left: 0; bottom: 0;
-    width: 40px; height: 2px; border-radius: 999px;
+    content: ""; position: absolute; left: 1px; bottom: 3px;
+    width: 34px; height: 3px; border-radius: 999px;
     background: var(--chrome-metal-line);
   }
 
@@ -258,11 +253,12 @@
     filter: blur(40px);
   }
 
-  /* ===== 区块节奏：偶数区块极淡底纹 ===== */
+  /* ===== 区块节奏：偶数区块极淡底纹（铺满整幅视口，避免在导航栏右缘留下一条竖缝） ===== */
   #main > section { position: relative; }
   #main > section:nth-of-type(even)::before {
-    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-    background: linear-gradient(180deg, rgba(0,0,0,0.03), transparent 60%);
+    content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: calc(-1 * var(--nav-w));
+    z-index: -1; pointer-events: none;
+    background: linear-gradient(180deg, transparent 0, rgba(0,0,0,0.032) 10%, rgba(0,0,0,0.012) 55%, transparent 100%);
   }
 
   /* ===== 启动页（liquid chrome 首屏，完整对齐参考页几何） ===== */
@@ -605,6 +601,10 @@
     transition: transform 0.6s var(--chrome-ease), opacity 0.6s var(--chrome-ease),
                 filter 0.6s var(--chrome-ease), box-shadow 0.6s var(--chrome-ease);
   }
+  .side-orb.nav-link { width: 44px; justify-content: flex-start; padding-left: 13px; gap: 9px; transition: width .35s var(--chrome-ease), transform .6s var(--chrome-ease), opacity .6s var(--chrome-ease), filter .6s var(--chrome-ease), box-shadow .6s var(--chrome-ease); }
+  .side-orb.nav-link .nav-label { display: none; white-space: nowrap; font-size: .72rem; font-weight: 700; color: #fff; }
+  .side-orb.nav-link.active { width: 116px; border-radius: 999px; }
+  .side-orb.nav-link.active .nav-label { display: inline; }
   .side-orb .orb-ico {
     width: 18px; height: 18px; color: #fff;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.55));
@@ -654,6 +654,48 @@
     .side-orb .orb-ico { width: 16px; height: 16px; }
     .side-orb-brand { width: 34px; height: 34px; }
     .side-orb-print { width: 32px; height: 32px; }
+  }
+  /* 中等宽度（平板 / 小笔记本）：正文左缘离导航栏很近，选中态展开的文字胶囊会压到标题上，
+     这里收起来只留图标球（仍保留悬停阴影与 aria-label）。 */
+  @media (min-width: 768px) and (max-width: 1199px) {
+    .side-orb.nav-link.active { width: 44px; }
+    .side-orb.nav-link.active .nav-label { display: none; }
+    .side-orb.nav-link { padding-left: 13px; }
+  }
+  /* 窄屏（手机）：左侧竖排的导航球会压住正文标题与段落，改为底部横向胶囊条，
+     正文回到满宽居中，并给页面底部留出条高的安全距离。 */
+  @media (max-width: 767px) {
+    :root { --nav-w: 0px; }
+    body { padding-bottom: 88px; }
+    #sideNav {
+      left: 50%; right: auto; top: auto; bottom: 12px;
+      transform: translateX(-50%);
+      flex-direction: row; align-items: center; gap: 6px;
+      max-width: calc(100vw - 20px);
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.82);
+      -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+      box-shadow: 0 14px 34px -16px rgba(0, 0, 0, 0.35), inset 0 0 0 1px var(--chrome-line);
+      overflow-x: auto; overflow-y: hidden;
+      scrollbar-width: none;
+    }
+    #sideNav::-webkit-scrollbar { display: none; }
+    .side-links { flex-direction: row; align-items: center; gap: 6px; }
+    .side-orb { width: 38px; height: 38px; flex: 0 0 auto; }
+    .side-orb.nav-link { width: 38px; padding-left: 10px; opacity: 0.72; filter: none; transform: none; }
+    .side-orb.nav-link.active { width: 38px; opacity: 1; transform: none; }
+    .side-orb.nav-link .nav-label { display: none !important; }
+    .side-orb-brand, .side-orb-print { display: none; }
+    .back-to-top { bottom: 88px !important; }
+  }
+  /* 很窄的手机（≤400px）：8 个图标球塞不进一行，收小一圈保持单行不横滚 */
+  @media (max-width: 400px) {
+    .side-orb { width: 34px; height: 34px; }
+    .side-orb.nav-link { width: 34px; padding-left: 8px; }
+    .side-orb.nav-link.active { width: 34px; }
+    .side-orb .orb-ico { width: 16px; height: 16px; }
+    .side-links { gap: 4px; }
   }
 
   /* ===== 亮点卡片 ===== */
@@ -805,8 +847,9 @@
   }
   .skip-link:focus { transform: translateY(0); outline: 2px solid #000; outline-offset: 2px; }
 
-  #main:focus { outline: none; }
-  #main:focus-visible { outline: 2px solid #000; outline-offset: 2px; }
+  /* 主内容区接收焦点（跳转到正文 / 开屏结束后 focus）：整页大的焦点环会被画成
+     一条贴着左缘 2px 黑边，视觉上像排版出血，这里只在键盘 Tab 时给 skip-link 提示，不再给正文描边 */
+  #main:focus, #main:focus-visible { outline: none; }
 </style>
 </head>
 <body>
@@ -896,14 +939,14 @@
     <img src="logo.jpg" alt="" onerror="this.style.display='none'">
   </a>
   <nav class="side-links" aria-label="简历目录">
-    <a href="#about" class="side-orb nav-link" title="关于我" aria-label="关于我"><i data-lucide="user-round" class="orb-ico"></i></a>
-    <a href="#highlights" class="side-orb nav-link" title="亮点" aria-label="亮点"><i data-lucide="trending-up" class="orb-ico"></i></a>
-    <a href="#experiences" class="side-orb nav-link" title="经历" aria-label="经历"><i data-lucide="briefcase" class="orb-ico"></i></a>
-    <a href="#projects" class="side-orb nav-link" title="生活瞬间" aria-label="生活瞬间"><i data-lucide="camera" class="orb-ico"></i></a>
-    <a href="#skills" class="side-orb nav-link" title="技能" aria-label="技能"><i data-lucide="wrench" class="orb-ico"></i></a>
-    <a href="#education" class="side-orb nav-link" title="教育" aria-label="教育"><i data-lucide="graduation-cap" class="orb-ico"></i></a>
-    <a href="#services" class="side-orb nav-link" title="我能做" aria-label="我能做"><i data-lucide="sparkles" class="orb-ico"></i></a>
-    <a href="#contact" class="side-orb nav-link" title="联系方式" aria-label="联系方式"><i data-lucide="contact" class="orb-ico"></i></a>
+    <a href="#about" class="side-orb nav-link" title="关于我" aria-label="关于我"><i data-lucide="user-round" class="orb-ico"></i><span class="nav-label">关于我</span></a>
+    <a href="#highlights" class="side-orb nav-link" title="亮点" aria-label="亮点"><i data-lucide="trending-up" class="orb-ico"></i><span class="nav-label">亮点</span></a>
+    <a href="#experiences" class="side-orb nav-link" title="经历" aria-label="经历"><i data-lucide="briefcase" class="orb-ico"></i><span class="nav-label">经历</span></a>
+    <a href="#projects" class="side-orb nav-link" title="生活瞬间" aria-label="生活瞬间"><i data-lucide="camera" class="orb-ico"></i><span class="nav-label">生活瞬间</span></a>
+    <a href="#skills" class="side-orb nav-link" title="技能" aria-label="技能"><i data-lucide="wrench" class="orb-ico"></i><span class="nav-label">技能</span></a>
+    <a href="#education" class="side-orb nav-link" title="教育" aria-label="教育"><i data-lucide="graduation-cap" class="orb-ico"></i><span class="nav-label">教育</span></a>
+    <a href="#services" class="side-orb nav-link" title="我能做" aria-label="我能做"><i data-lucide="sparkles" class="orb-ico"></i><span class="nav-label">我能做</span></a>
+    <a href="#contact" class="side-orb nav-link" title="联系方式" aria-label="联系方式"><i data-lucide="contact" class="orb-ico"></i><span class="nav-label">联系方式</span></a>
   </nav>
   <button id="printBtn" class="side-orb side-orb-print" type="button" aria-label="打印简历" title="打印简历">
     <i data-lucide="printer" class="orb-ico"></i>
@@ -920,7 +963,7 @@
         <div class="flex flex-col md:flex-row items-center gap-7 md:gap-12 text-center md:text-left">
           <div class="avatar-ring w-28 h-28 md:w-40 md:h-40 flex-shrink-0">
             <div class="w-full h-full rounded-full overflow-hidden border border-white/10 shadow-2xl bg-white">
-              <img src="logo.jpg" alt="陈成睿的大头照" class="w-full h-full object-cover" onerror="this.style.display='none';var p=this.parentElement;p.style.display='flex';p.style.alignItems='center';p.style.justifyContent='center';p.style.fontSize='2rem';p.style.fontWeight='700';p.style.color='#000';p.textContent='陈';">
+              <img src="logo.jpg" alt="陈成睿的大头照" fetchpriority="high" decoding="async" class="w-full h-full object-cover" onerror="this.style.display='none';var p=this.parentElement;p.style.display='flex';p.style.alignItems='center';p.style.justifyContent='center';p.style.fontSize='2rem';p.style.fontWeight='700';p.style.color='#000';p.textContent='陈';">
             </div>
           </div>
           <div class="flex-1">
@@ -971,7 +1014,7 @@
         <h2 class="section-title text-2xl md:text-3xl font-extrabold">经历</h2>
       </div>
       <p class="text-sm text-slate-400 mb-4">校园、项目和实习</p>
-      <div id="expTabs" class="tabs-custom flex gap-1 bg-slate-900/50 border border-white/10 rounded-xl p-1 mb-5 overflow-x-auto scrollbar-none" role="tablist" aria-label="经历分类"></div>
+      <div id="expTabs" class="tabs-custom inline-flex w-fit max-w-full gap-1 bg-slate-900/50 border border-white/10 rounded-xl p-1 mb-5 overflow-x-auto scrollbar-none" role="tablist" aria-label="经历分类"></div>
       <div id="expPanels"></div>
     </div>
   </section>
@@ -1172,7 +1215,8 @@
     ],
     galleryImages: [
       "worek_1.jpg",
-      "worek_2.jpg"
+      "worek_2.jpg",
+      "worek_3.jpg"
     ]
   };
 
@@ -1366,6 +1410,7 @@
       img.src = imgSrc;
       img.alt = `生活瞬间图片 ${index + 1}`;
       img.loading = 'lazy';
+      img.decoding = 'async';
       img.className = 'w-full h-full object-cover';
       img.onerror = function() { this.parentElement.style.display = 'none'; };
       item.appendChild(img);
@@ -1384,6 +1429,21 @@
       const item = makeGalleryItem(imgs[0], 0);
       item.className = 'glass-card overflow-hidden cursor-pointer mx-auto w-full max-w-sm rounded-2xl transition-all hover:border-cyan-400/40';
       projPanels.appendChild(item);
+    } else if (imgs.length === 3) {
+      // 3 张：前两张 1:1 并排；第三张是 2.2:1 的全景合照，横跨两列按原比例铺开，
+      // 否则在方形格子里会被 object-cover 裁掉两侧的人
+      const grid = document.createElement('div');
+      grid.className = 'grid grid-cols-2 mx-auto gap-3 md:gap-4';
+      grid.style.maxWidth = '56rem';
+      imgs.forEach((imgSrc, index) => {
+        const item = makeGalleryItem(imgSrc, index);
+        if (index === 2) {
+          item.style.aspectRatio = '2.2 / 1';
+          item.style.gridColumn = 'span 2 / span 2';
+        }
+        grid.appendChild(item);
+      });
+      projPanels.appendChild(grid);
     } else {
       // 列数跟随图片数量，避免 2 张图被拉进 4 列网格、右侧空出一大片
       const grid = document.createElement('div');
@@ -1428,8 +1488,8 @@
     // 教育
     const eduCard = document.getElementById('eduCard');
     eduCard.innerHTML = `
-      <div class="flex items-center gap-3">
-        <i data-lucide="school" class="w-6 h-6 text-cyan-400"></i>
+      <div class="flex items-start gap-3">
+        <i data-lucide="school" class="w-6 h-6 text-cyan-400 flex-shrink-0 mt-0.5"></i>
         <div>
           <div class="text-lg md:text-xl font-extrabold text-white tracking-tight">${resume.education.school}</div>
           <div class="text-sm text-indigo-300 font-semibold">${resume.education.major} · ${resume.education.degree}</div>
@@ -1449,7 +1509,7 @@
       const detail = [cert.issuer, cert.year, cert.level].filter(d => d && d !== '' && d !== '待补').join(' · ');
       let imgHtml = '';
       if (cert.img) {
-        imgHtml = `<img src="${cert.img}" alt="${cert.name}" class="cert-img w-full mt-2 rounded-xl border border-white/10 cursor-pointer hover:border-cyan-400/40 transition-colors" loading="lazy" onerror="this.style.display='none'">`;
+        imgHtml = `<img src="${cert.img}" alt="${cert.name}" class="cert-img w-full mt-2 rounded-xl border border-white/10 cursor-pointer hover:border-cyan-400/40 transition-colors" loading="lazy" decoding="async" onerror="this.style.display='none'">`;
       }
       div.innerHTML = `
         <i data-lucide="award" class="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5"></i>
@@ -2532,3 +2592,4 @@
 </script>
 </body>
 </html>
+
